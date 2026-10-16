@@ -79,7 +79,7 @@
     @apply min-w-0 flex-1;
   }
   .main {
-    @apply p-[26px];
+    @apply p-6.5;
   }
   .card {
     @apply rounded-[14px] border border-line bg-white;
@@ -105,7 +105,7 @@
     max-width: none;
   }
   .sidebar {
-    @apply sticky top-0 flex h-screen w-[88px] shrink-0 flex-col items-center bg-white px-3 py-[18px];
+    @apply sticky top-0 flex h-screen w-22 shrink-0 flex-col items-center bg-white px-3 py-4.5;
   }
   .brand {
     @apply flex size-12 shrink-0 items-center justify-center rounded-[14px] bg-green text-white;
@@ -123,7 +123,7 @@
     @apply mt-auto flex flex-col gap-4;
   }
   .topbar {
-    @apply flex h-[76px] items-center gap-5 bg-white px-[26px];
+    @apply flex h-19 items-center gap-5 bg-white px-6.5;
   }
   .topbar h1 {
     @apply shrink-0;
@@ -138,13 +138,13 @@
     @apply flex size-9 shrink-0 items-center justify-center rounded-full bg-green font-semibold text-white;
   }
   .identity {
-    @apply flex min-w-[110px] flex-col gap-1;
+    @apply flex min-w-27.5 flex-col gap-1;
   }
   .identity small {
     @apply text-muted;
   }
   .demo-strip {
-    @apply bg-[#f6faf8] px-[26px] py-1 text-[10px] text-muted;
+    @apply bg-[#f6faf8] px-6.5 py-1 text-[10px] text-muted;
   }
   .notification-button {
     @apply relative;
@@ -156,7 +156,7 @@
     @apply grid grid-cols-4 gap-4;
   }
   .stat {
-    @apply flex min-h-[108px] items-center gap-4 p-[18px];
+    @apply flex min-h-27 items-center gap-4 p-4.5;
   }
   .stat-icon {
     @apply flex size-12 shrink-0 items-center justify-center rounded-xl bg-[#09a071] text-white;
@@ -177,25 +177,25 @@
     @apply text-green-700;
   }
   .select-wrap {
-    @apply relative min-w-[110px];
+    @apply relative min-w-27.5;
   }
   .select-wrap select {
     @apply h-12 w-full appearance-none rounded-[11px] border border-line bg-white pr-9 pl-4 font-semibold;
   }
   .select-wrap svg {
-    @apply pointer-events-none absolute top-[17px] right-3;
+    @apply pointer-events-none absolute top-4.25 right-3;
   }
   .search-field {
-    @apply flex min-h-[50px] min-w-0 flex-1 items-center gap-3 rounded-[13px] border border-line bg-white px-[14px] text-muted;
+    @apply flex min-h-12.5 min-w-0 flex-1 items-center gap-3 rounded-[13px] border border-line bg-white px-3.5 text-muted;
   }
   .search-field input {
     @apply h-12 w-full bg-transparent outline-none text-[#15213a] placeholder:text-muted;
   }
   .dashboard {
-    @apply flex min-h-[calc(100dvh-98px)] flex-col gap-4 pt-[14px] pb-[14px];
+    @apply flex min-h-[calc(100dvh-98px)] flex-col gap-4 pt-3.5 pb-3.5;
   }
   .overview {
-    @apply flex flex-1 flex-col p-[22px];
+    @apply flex flex-1 flex-col p-5.5;
     min-height: 360px;
   }
   .overview > div > div > p {
@@ -213,7 +213,7 @@
     @apply flex flex-1 items-center gap-5;
   }
   .gauge-block {
-    @apply flex w-[210px] shrink-0 flex-col items-center gap-3 text-center;
+    @apply flex w-52.5 shrink-0 flex-col items-center gap-3 text-center;
   }
   .gauge {
     @apply relative flex size-40 items-center justify-center;
@@ -248,7 +248,7 @@
     @apply mt-3 grid grid-cols-4 gap-3;
   }
   .quick-grid button {
-    @apply flex min-h-[78px] items-center gap-2 rounded-[10px] border border-line bg-[#f6faf8] px-[14px] py-3 text-left hover:bg-mint;
+    @apply flex min-h-19.5 items-center gap-2 rounded-[10px] border border-line bg-[#f6faf8] px-3.5 py-3 text-left hover:bg-mint;
   }
   .quick-grid button.primary {
     @apply bg-[#12854e] text-white;
@@ -266,7 +266,7 @@
     @apply text-white/80;
   }
   .table-controls {
-    @apply flex flex-wrap items-center gap-3 p-[18px];
+    @apply flex flex-wrap items-center gap-3 p-4.5;
   }
   .table-scroll {
     @apply w-full overflow-x-auto;
@@ -287,7 +287,7 @@
     @apply bg-[#f6faf8];
   }
   .table-footer {
-    @apply border-t border-line px-[18px] py-4 text-[11px] text-muted;
+    @apply border-t border-line px-4.5 py-4 text-[11px] text-muted;
   }
   .badge {
     @apply inline-flex items-center rounded-full px-3 py-2 text-[11px] font-medium whitespace-nowrap;
@@ -311,10 +311,10 @@
     @apply flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-mint;
   }
   .toggle {
-    @apply flex h-[26px] w-[42px] shrink-0 items-center rounded-full bg-slate-300 px-1;
+    @apply flex h-6.5 w-10.5 shrink-0 items-center rounded-full bg-slate-300 px-1;
   }
   .toggle span {
-    @apply size-[18px] rounded-full bg-white;
+    @apply size-4.5 rounded-full bg-white;
   }
   .toggle.on {
     @apply justify-end bg-green;
@@ -350,10 +350,10 @@
     min-height: 560px;
   }
   .pos-categories {
-    @apply flex flex-col gap-[10px] bg-white px-[10px] py-4;
+    @apply flex flex-col gap-2.5 bg-white px-2.5 py-4;
   }
   .pos-categories > button {
-    @apply flex min-h-[76px] flex-col items-center justify-center gap-[10px] rounded-[14px] border border-line bg-white p-3 text-center text-[12px] font-semibold;
+    @apply flex min-h-19 flex-col items-center justify-center gap-2.5 rounded-[14px] border border-line bg-white p-3 text-center text-[12px] font-semibold;
   }
   .pos-categories > button.active {
     @apply border-green bg-green text-white;
@@ -369,17 +369,17 @@
     box-shadow: 0 4px 3px #10281e30;
   }
   .products-grid {
-    @apply grid grid-cols-4 gap-[14px];
+    @apply grid grid-cols-4 gap-3.5;
   }
   .product-card {
-    @apply flex min-w-0 flex-col gap-[7px] rounded-[14px] border border-line bg-white p-3 text-left;
+    @apply flex min-w-0 flex-col gap-1.75 rounded-[14px] border border-line bg-white p-3 text-left;
     box-shadow: 0 4px 3px #10281e30;
   }
   .product-card:hover {
     @apply border-green;
   }
   .product-art {
-    @apply mb-0 flex h-[90px] w-full items-center justify-center rounded-[12px] bg-mint;
+    @apply mb-0 flex h-22.5 w-full items-center justify-center rounded-xl bg-mint;
   }
   .product-card strong {
     @apply text-[13px] leading-snug;
@@ -418,7 +418,7 @@
     @apply border-t border-line pt-5;
   }
   .checkout-layout {
-    @apply grid grid-cols-2 items-start gap-6 max-w-[1100px] mx-auto;
+    @apply grid grid-cols-2 items-start gap-6 max-w-275 mx-auto;
   }
   .checkout-row {
     @apply flex items-center justify-between gap-4 border-b border-line py-5;
@@ -445,7 +445,7 @@
     @apply fixed inset-0 z-50 flex items-center justify-center bg-[#10251d66] p-5;
   }
   .modal {
-    @apply max-h-[92dvh] w-full max-w-[520px] overflow-y-auto rounded-[18px] border border-line bg-white shadow-2xl;
+    @apply max-h-[92dvh] w-full max-w-130 overflow-y-auto rounded-[18px] border border-line bg-white shadow-2xl;
   }
   .modal.wide {
     max-width: 800px;
@@ -463,7 +463,7 @@
     @apply justify-end p-0;
   }
   .modal.drawer {
-    @apply h-dvh max-h-dvh max-w-[480px] rounded-none;
+    @apply h-dvh max-h-dvh max-w-120 rounded-none;
   }
   .field {
     @apply mb-4 flex min-w-0 flex-col gap-2;
@@ -475,7 +475,7 @@
   .field select,
   .field textarea,
   .readonly-field {
-    @apply min-h-[50px] w-full rounded-[13px] border border-line bg-white px-[14px] py-3;
+    @apply min-h-12.5 w-full rounded-[13px] border border-line bg-white px-3.5 py-3;
   }
   .readonly-field {
     @apply text-muted;
@@ -493,7 +493,7 @@
     @apply p-10 text-center text-muted;
   }
   .toast {
-    @apply fixed bottom-6 left-1/2 z-[70] flex -translate-x-1/2 items-center gap-3 rounded-xl border border-[#c3e8d7] bg-white px-6 py-4 font-semibold text-green-700 shadow-xl;
+    @apply fixed bottom-6 left-1/2 z-70 flex -translate-x-1/2 items-center gap-3 rounded-xl border border-[#c3e8d7] bg-white px-6 py-4 font-semibold text-green-700 shadow-xl;
   }
   .text-button {
     @apply flex min-h-10 items-center justify-center gap-2 font-semibold text-green-700;
@@ -514,7 +514,7 @@
     @apply text-right font-semibold break-all;
   }
   .period-controls {
-    @apply flex flex-wrap items-end gap-2 p-[14px];
+    @apply flex flex-wrap items-end gap-2 p-3.5;
   }
   .period-controls .field {
     margin: 0;
@@ -564,13 +564,13 @@
     min-height: calc(100dvh - 98px);
   }
   .settings-nav {
-    @apply flex flex-col bg-white px-[14px] py-6;
+    @apply flex flex-col bg-white px-3.5 py-6;
   }
   .settings-nav nav {
     @apply flex flex-col gap-2;
   }
   .settings-nav nav > button {
-    @apply flex min-h-[52px] items-center gap-3 rounded-xl px-3 py-3 text-left text-[12px] font-semibold;
+    @apply flex min-h-13 items-center gap-3 rounded-xl px-3 py-3 text-left text-[12px] font-semibold;
   }
   .settings-nav nav > button.active {
     @apply bg-green text-white;
@@ -582,7 +582,7 @@
     margin-top: auto;
   }
   .settings-main {
-    @apply p-[30px];
+    @apply p-7.5;
   }
   .settings-heading {
     @apply mb-6 flex items-center gap-4;
@@ -591,7 +591,7 @@
     @apply text-2xl;
   }
   .section-icon {
-    @apply flex size-[52px] shrink-0 items-center justify-center rounded-[13px] bg-green;
+    @apply flex size-13 shrink-0 items-center justify-center rounded-[13px] bg-green;
   }
   .section-icon img {
     filter: brightness(0) invert(1);
@@ -606,7 +606,7 @@
     @apply my-4 max-h-52 max-w-full object-contain;
   }
   .receipt {
-    @apply mx-auto max-w-[340px] bg-white p-3 text-[12px];
+    @apply mx-auto max-w-85 bg-white p-3 text-[12px];
     font-family: "Courier New", monospace;
   }
   .receipt h2,
@@ -651,7 +651,7 @@
     @apply relative py-10 text-center;
   }
   .login-hero img {
-    @apply mx-auto mb-6 h-[220px] w-[320px] max-w-full object-contain;
+    @apply mx-auto mb-6 h-55 w-80 max-w-full object-contain;
   }
   .login-hero h2 {
     @apply mb-2 text-xl;
@@ -669,14 +669,14 @@
     @apply relative flex min-h-dvh items-center justify-center px-10 py-14;
   }
   .login-card {
-    @apply w-full max-w-[520px] rounded-[28px] border border-[#d7e1ea] bg-white p-10 text-[#15213a];
+    @apply w-full max-w-130 rounded-[28px] border border-[#d7e1ea] bg-white p-10 text-[#15213a];
     box-shadow: 0 18px 30px #15213a12;
   }
   .login-card h1 {
     @apply mb-2 text-center;
   }
   .role-choice {
-    @apply flex min-h-[100px] items-center gap-5 rounded-2xl border border-[#d7e1ea] p-5 text-left hover:border-green hover:bg-mint;
+    @apply flex min-h-25 items-center gap-5 rounded-2xl border border-[#d7e1ea] p-5 text-left hover:border-green hover:bg-mint;
   }
   .role-choice > span:nth-child(2) {
     @apply flex-1;
