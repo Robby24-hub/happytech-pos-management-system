@@ -1149,3 +1149,19 @@
     flex-shrink: 0;
   }
 }
+
+.account-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:28px;max-height:350px;overflow:auto;}
+.account-choice {min-height:120px;background:white;border:1px solid #dbe6e1;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;padding:12px;text-align:center;}
+.account-choice:hover,.account-choice:focus-visible {border-color:#1e9d75;background:#eaf7f1;}
+.account-avatar {display:flex;align-items:center;justify-content:center;width:54px;height:54px;border-radius:50%;background:#eaf7f1;color:#1e9d75;overflow:hidden;}
+.account-avatar img {width:100%;height:100%;object-fit:cover;}
+.account-avatar-large {margin:22px auto 10px;width:70px;height:70px;}
+.account-email,.pin-change-card input {width:100%;display:block;margin-top:9px;padding:13px;border:1px solid #dbe6e1;border-radius:10px;}
+.config-needed,.pin-change-screen {min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:30px;text-align:center;}
+.pin-change-card {width:min(100%,420px);background:white;text-align:left;padding:30px;display:grid;gap:18px;}
+.super-stats {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:22px 0;}
+.super-stats .card {padding:20px;display:grid;gap:10px;}
+.super-stats strong {font-size:28px;}
+.system-event {display:flex;justify-content:space-between;gap:15px;padding:12px;border-bottom:1px solid #dbe6e1;}
+.system-event time {color:#6e7e78;}
+@media(max-width:650px){.account-grid,.super-stats {grid-template-columns:repeat(2,minmax(0,1fr));}}

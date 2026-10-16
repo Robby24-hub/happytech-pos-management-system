@@ -1,0 +1,34 @@
+import { createClient } from "@supabase/supabase-js";
+
+const url = import.meta.env.VITE_SUPABASE_URL;
+const anon = import.meta.env.VITE_SUPABASE_ANON_KEY;
+export const configured = Boolean(url && anon);
+export const supabase = configured ? createClient(url, anon, {
+  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+}) : null;
+
+export async function listAccounts() {
+  const { data, error } = await supabase.rpc("list_login_accounts");
+  if (error) throw error;
+  return data;
+}
+export async function signInPin(accountId, pin) {
+  const { data, error } = await supabase.functions.invoke("account-auth", {
+    body: { action: "login", accountId, pin },
+  });
+  if (error || data?.error) throw new Error(data?.error || error?.message || "Sign in failed");
+  const result = await supabase.auth.verifyOtp({ token_hash: data.token_hash, type: "magiclink" });
+  if (result.error) throw result.error;
+  return result.data;
+}
+export async function getProfile(id) {
+  const { data, error } = await supabase.from("profiles").select("id,name,role,active,must_change_pin,avatar_url").eq("id", id).single();
+  if (error) throw error;
+  if (!data.active) throw new Error("Account disabled");
+  return data;
+}
+export async function accountAction(body) {
+  const { data, error } = await supabase.functions.invoke("account-auth", { body });
+  if (error || data?.error) throw new Error(data?.error || error?.message || "Operation failed");
+  return data;
+}

@@ -18,6 +18,10 @@ import SalesHistory from "./pages/SalesHistory";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import Administration from "./pages/Administration";
+import SuperDashboard from "./pages/SuperDashboard";
+import AdminManagement from "./pages/AdminManagement";
+import ChangePin from "./pages/ChangePin";
+import { supabase, configured, getProfile } from "./lib/supabase";
 const KEY = "happytech-demo-v1";
 function readState() {
   try {
@@ -32,12 +36,30 @@ function readState() {
 export default function App() {
   const [state, setState] = useState(readState),
     [userId, setUserId] = useState(null),
+    [cloudUser, setCloudUser] = useState(null),
+    [authLoading, setAuthLoading] = useState(true),
+    [recoveryMode,setRecoveryMode] = useState(false),
     [page, setPage] = useState("dashboard"),
     [toast, setToast] = useState(""),
     [overlay, setOverlay] = useState(null),
     [settingsTab, setSettingsTab] = useState("Store Information"),
     [storageError, setStorageError] = useState(false);
-  const user = state.users.find((u) => u.id === userId && u.active);
+  const user = cloudUser ? { ...cloudUser, id: cloudUser.id } : null;
+  const refreshAuth = useCallback(async () => {
+    try {
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (!authUser) { setCloudUser(null); return; }
+      const profile = await getProfile(authUser.id);
+      setCloudUser(profile);
+    } catch { await supabase.auth.signOut(); setCloudUser(null); }
+    finally { setAuthLoading(false); }
+  }, []);
+  useEffect(() => {
+    if (!configured) { setAuthLoading(false); return; }
+    refreshAuth();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => { if(event === "PASSWORD_RECOVERY") setRecoveryMode(true); setTimeout(refreshAuth, 0); });
+    return () => subscription.unsubscribe();
+  }, [refreshAuth]);
   useEffect(() => {
     try {
       localStorage.setItem(KEY, JSON.stringify(state));
@@ -79,55 +101,34 @@ export default function App() {
     setPage(p);
     setOverlay(null);
   }, []);
-  const logout = () => {
+  const logout = async () => {
+    await supabase.auth.signOut();
+    setCloudUser(null);
     setUserId(null);
     setOverlay(null);
     setPage("dashboard");
   };
-  const allowed =
-    user?.role === "Cashier"
-      ? ["pos", "sales-history"]
-      : user?.role === "Super Admin"
-        ? [
-            "dashboard",
-            "pos",
-            "sales-history",
-            "inventory",
-            "reports",
-            "settings",
-            "administration",
-            "logs",
-          ]
-        : [
-            "dashboard",
-            "pos",
-            "sales-history",
-            "inventory",
-            "reports",
-            "settings",
-            "logs",
-          ];
+  const allowed = user?.role === "Cashier" ? ["pos", "sales-history"]
+    : user?.role === "Super Admin" ? ["super-dashboard", "administration", "logs"]
+    : ["dashboard", "sales-history", "inventory", "reports", "settings"];
   const current = allowed.includes(page) ? page : allowed[0];
   const props = { state, update, user, notify, navigate };
   const nav = [
     ["dashboard", "Dashboard", "imgLayoutDashboard"],
+    ["super-dashboard", "Home", "imgLayoutDashboard"],
     ["pos", "POS", "imgShoppingCart"],
     ["sales-history", "Sales History", "imgHistory"],
     ["inventory", "Inventory", "imgPackage"],
     ["reports", "Reports", "imgBarChart3"],
     ["settings", "Settings", "imgSettings"],
   ];
+  if (!configured) return <div className="config-needed"><h1>Supabase setup required</h1><p>Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your .env.local file. See SETUP_AUTH.md.</p></div>;
+  if (authLoading) return <div className="config-needed">Checking account session...</div>;
+  if (user && (user.must_change_pin || recoveryMode)) return <ChangePin onDone={async()=>{setRecoveryMode(false);await refreshAuth();}}/>;
   if (!user)
     return (
       <>
-        <Login
-          users={state.users}
-          settings={state.settings}
-          onLogin={(u) => {
-            setUserId(u.id);
-            setPage(u.role === "Cashier" ? "pos" : "dashboard");
-          }}
-        />
+        <Login onLogin={refreshAuth} />
         <Toast message={toast} />
       </>
     );
@@ -224,6 +225,7 @@ export default function App() {
           title={
             {
               dashboard: "Dashboard",
+              "super-dashboard": "System Overview",
               pos: "POS",
               "sales-history": "Sales History",
               inventory: "Inventory",
@@ -249,7 +251,7 @@ export default function App() {
           </button>
         </Header>
         <div className="demo-strip no-print">
-          Frontend demo · Data saved on this browser only
+          Authentication: Supabase · Business data: browser-only mock data
           {storageError && (
             <b>
               {" "}
@@ -258,6 +260,7 @@ export default function App() {
             </b>
           )}
         </div>
+        {current === "super-dashboard" && <SuperDashboard {...props} />}
         {current === "dashboard" && <Dashboard {...props} />}{" "}
         {current === "pos" && <POS {...props} />}{" "}
         {current === "inventory" && <Inventory {...props} />}{" "}
@@ -271,9 +274,8 @@ export default function App() {
             onLogout={() => setOverlay("logout")}
           />
         )}{" "}
-        {["administration", "logs"].includes(current) && (
-          <Administration {...props} page={current} />
-        )}
+        {current === "administration" && <AdminManagement />}
+        {current === "logs" && <Administration {...props} page="logs" />}
       </div>
       <Toast message={toast} />
       {overlay === "logout" && (

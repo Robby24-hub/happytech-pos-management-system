@@ -1,0 +1,5 @@
+import { Activity, ShieldCheck, Users } from "lucide-react";
+export default function SuperDashboard({ state }) {
+  const admins = state.users.filter(u=>u.role === "Admin");
+  return <main className="main"><p className="eyebrow">SUPER ADMIN</p><h2 className="text-2xl">System Overview</h2><p className="helper mt-2">Administration and security activity</p><div className="super-stats"><section className="card"><ShieldCheck/><strong>{admins.length}</strong><span>Admin accounts</span></section><section className="card"><Users/><strong>{admins.filter(u=>u.active).length}</strong><span>Active Admins</span></section><section className="card"><Activity/><strong>{state.logs.length}</strong><span>Recent local activity</span></section></div><section className="card p-6"><h2>Recent System Logs</h2><p className="helper mb-4">Business actions are still mock data until cloud migration.</p>{state.logs.slice(0,12).map(l=><div className="system-event" key={l.id}><span>{l.actor} — {l.action}</span><time>{new Date(l.date).toLocaleString("en-PH")}</time></div>)}{state.logs.length===0 && <p className="helper">No activity has been recorded yet.</p>}</section></main>;
+}
