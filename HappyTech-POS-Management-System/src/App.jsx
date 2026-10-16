@@ -10,14 +10,14 @@ import {
   Badge,
   Empty,
 } from "./components/UI";
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
-import POS from "./pages/POS";
-import Inventory from "./pages/Inventory";
-import SalesHistory from "./pages/SalesHistory";
-import Reports from "./pages/Reports";
-import Settings from "./pages/Settings";
-import Administration from "./pages/Administration";
+import Login from "./pages/Login/Login";
+import Dashboard from "./pages/Dashboard/Dashboard";
+import POS from "./pages/POS/POS";
+import Inventory from "./pages/Inventory/Inventory";
+import SalesHistory from "./pages/SalesHistory/SalesHistory";
+import Reports from "./pages/Reports/Reports";
+import Settings from "./pages/Settings/Settings";
+import Administration from "./pages/Administration/Administration";
 const KEY = "happytech-demo-v1";
 function readState() {
   try {

@@ -9,9 +9,9 @@ import {
   Field,
   Badge,
   Empty,
-} from "../components/UI";
-import { money, dateTime, within } from "../data/mock";
-import Receipt, { exportPDF } from "../components/Receipt";
+} from "../../components/UI";
+import { money, dateTime, within } from "../../data/mock";
+import Receipt, { exportPDF } from "../../components/Receipt";
 export default function SalesHistory({ state, update, user, notify }) {
   const [search, setSearch] = useState(""),
     [payment, setPayment] = useState("All Payments"),

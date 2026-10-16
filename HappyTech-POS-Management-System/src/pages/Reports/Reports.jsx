@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Download, Printer, CalendarDays } from "lucide-react";
-import { Card, Stat, Button, Field, Empty } from "../components/UI";
-import Chart from "../components/Chart";
-import { money, within } from "../data/mock";
-import { exportPDF } from "../components/Receipt";
+import { Card, Stat, Button, Field, Empty } from "../../components/UI";
+import Chart from "../../components/Chart";
+import { money, within } from "../../data/mock";
+import { exportPDF } from "../../components/Receipt";
 export default function Reports({ state }) {
   const [period, setPeriod] = useState("Today"),
     [start, setStart] = useState(new Date().toISOString().slice(0, 10)),

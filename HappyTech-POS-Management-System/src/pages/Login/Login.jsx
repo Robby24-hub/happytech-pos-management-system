@@ -8,7 +8,7 @@ import {
   Lightbulb,
   ShieldCheck,
 } from "lucide-react";
-import { Button, Field, Icon } from "../components/UI";
+import { Button, Field, Icon } from "../../components/UI";
 export default function Login({ users, settings, onLogin }) {
   const [role, setRole] = useState(""),
     [account, setAccount] = useState(""),

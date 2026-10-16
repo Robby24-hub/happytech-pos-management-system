@@ -9,8 +9,8 @@ import {
   Field,
   Badge,
   Empty,
-} from "../components/UI";
-import { dateTime } from "../data/mock";
+} from "../../components/UI";
+import { dateTime } from "../../data/mock";
 export default function Administration({ state, update, user, notify, page }) {
   const [search, setSearch] = useState(""),
     [filter, setFilter] = useState("All Roles"),

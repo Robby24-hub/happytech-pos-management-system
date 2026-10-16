@@ -20,8 +20,8 @@ import {
   Modal,
   Field,
   Empty,
-} from "../components/UI";
-import { money, stockStatus } from "../data/mock";
+} from "../../components/UI";
+import { money, stockStatus } from "../../data/mock";
 const blank = {
   name: "",
   group: "Rice",

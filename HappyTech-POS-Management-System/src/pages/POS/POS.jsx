@@ -15,9 +15,9 @@ import {
   Modal,
   Field,
   Empty,
-} from "../components/UI";
-import { money } from "../data/mock";
-import Receipt from "../components/Receipt";
+} from "../../components/UI";
+import { money } from "../../data/mock";
+import Receipt from "../../components/Receipt";
 export default function POS({ state, update, user, notify, navigate }) {
   const [search, setSearch] = useState(""),
     [category, setCategory] = useState("All Products"),

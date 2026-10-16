@@ -21,8 +21,8 @@ import {
   Modal,
   Badge,
   Empty,
-} from "../components/UI";
-import { dateTime } from "../data/mock";
+} from "../../components/UI";
+import { dateTime } from "../../data/mock";
 const sections = [
   ["Store Information", "imgStore"],
   ["Cashier Accounts", "imgUsersRound"],

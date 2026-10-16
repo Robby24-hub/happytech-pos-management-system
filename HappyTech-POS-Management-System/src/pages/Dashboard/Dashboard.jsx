@@ -6,9 +6,9 @@ import {
   AlertCircle,
   ChevronRight,
 } from "lucide-react";
-import { Card, Stat, Select, Icon } from "../components/UI";
-import Chart from "../components/Chart";
-import { money } from "../data/mock";
+import { Card, Stat, Select, Icon } from "../../components/UI";
+import Chart from "../../components/Chart";
+import { money } from "../../data/mock";
 export default function Dashboard({ state, navigate }) {
   const [period, setPeriod] = useState("Today");
   const total = state.sales
