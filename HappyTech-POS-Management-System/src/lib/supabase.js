@@ -12,11 +12,22 @@ export async function listAccounts() {
   if (error) throw error;
   return data;
 }
+async function functionError(error, data, fallback) {
+  if (data?.error) return new Error(data.error);
+  // Supabase FunctionsHttpError stores the JSON error response in context.
+  if (error?.context && typeof error.context.clone === "function") {
+    try {
+      const response = await error.context.clone().json();
+      if (typeof response?.error === "string") return new Error(response.error);
+    } catch { /* use the underlying error message */ }
+  }
+  return new Error(error?.message || fallback);
+}
 export async function signInPin(accountId, pin) {
   const { data, error } = await supabase.functions.invoke("account-auth", {
     body: { action: "login", accountId, pin },
   });
-  if (error || data?.error) throw new Error(data?.error || error?.message || "Sign in failed");
+  if (error || data?.error) throw await functionError(error, data, "Sign in failed");
   const result = await supabase.auth.verifyOtp({ token_hash: data.token_hash, type: "magiclink" });
   if (result.error) throw result.error;
   return result.data;
@@ -29,6 +40,6 @@ export async function getProfile(id) {
 }
 export async function accountAction(body) {
   const { data, error } = await supabase.functions.invoke("account-auth", { body });
-  if (error || data?.error) throw new Error(data?.error || error?.message || "Operation failed");
+  if (error || data?.error) throw await functionError(error, data, "Operation failed");
   return data;
 }

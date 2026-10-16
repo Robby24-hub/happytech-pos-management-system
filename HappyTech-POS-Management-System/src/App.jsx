@@ -17,11 +17,11 @@ import Inventory from "./pages/Inventory";
 import SalesHistory from "./pages/SalesHistory";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
-import Administration from "./pages/Administration";
+import ActivityLogs from "./pages/ActivityLogs";
 import SuperDashboard from "./pages/SuperDashboard";
 import AdminManagement from "./pages/AdminManagement";
 import ChangePin from "./pages/ChangePin";
-import { supabase, configured, getProfile } from "./lib/supabase";
+import { supabase, configured, getProfile, accountAction } from "./lib/supabase";
 const KEY = "happytech-demo-v1";
 function readState() {
   try {
@@ -102,6 +102,7 @@ export default function App() {
     setOverlay(null);
   }, []);
   const logout = async () => {
+    try { await accountAction({ action: "logout" }); } catch (err) { console.warn("Logout audit unavailable:", err.message); }
     await supabase.auth.signOut();
     setCloudUser(null);
     setUserId(null);
@@ -110,7 +111,7 @@ export default function App() {
   };
   const allowed = user?.role === "Cashier" ? ["pos", "sales-history"]
     : user?.role === "Super Admin" ? ["super-dashboard", "administration", "logs"]
-    : ["dashboard", "sales-history", "inventory", "reports", "settings"];
+    : ["dashboard", "sales-history", "inventory", "reports", "settings", "logs"];
   const current = allowed.includes(page) ? page : allowed[0];
   const props = { state, update, user, notify, navigate };
   const nav = [
@@ -196,7 +197,7 @@ export default function App() {
             )}
           </nav>
           <div className="sidebar-bottom">
-            {user.role !== "Cashier" && (
+            {user.role === "Admin" && (
               <button
                 className="nav-button"
                 title="My Account"
@@ -275,7 +276,7 @@ export default function App() {
           />
         )}{" "}
         {current === "administration" && <AdminManagement />}
-        {current === "logs" && <Administration {...props} page="logs" />}
+        {current === "logs" && <ActivityLogs user={user} />}
       </div>
       <Toast message={toast} />
       {overlay === "logout" && (

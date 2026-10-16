@@ -1165,3 +1165,31 @@
 .system-event {display:flex;justify-content:space-between;gap:15px;padding:12px;border-bottom:1px solid #dbe6e1;}
 .system-event time {color:#6e7e78;}
 @media(max-width:650px){.account-grid,.super-stats {grid-template-columns:repeat(2,minmax(0,1fr));}}
+
+/* Cloud account management — shared between Super Admin and Admin Settings */
+.account-toolbar {display:flex;align-items:center;justify-content:space-between;gap:18px;padding:20px 24px;flex-wrap:wrap}
+.account-toolbar-actions {display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.account-search {min-width:180px;max-width:240px}
+.account-cell {display:flex;align-items:center;gap:12px;min-width:180px}
+.account-photo {width:44px;height:44px;border-radius:50%;object-fit:cover;flex:none}
+.account-initial {display:grid;place-items:center;background:#eaf7f1;color:#16754f;font-weight:800;font-size:17px}
+.account-row-actions {display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.account-row-actions .btn {min-height:38px;padding:8px 12px;font-size:12px}
+.account-notice {margin:14px 0;padding:12px 15px;border-radius:10px;border:1px solid #dbe6e1;background:#fff}
+.account-notice.success {color:#176948;background:#eaf7f1;border-color:#afe0ce}
+.account-notice.error-text {color:#a42525;border-color:#fecaca;background:#fff6f6}
+.account-form {display:grid;gap:17px}
+.account-form .field input,.account-form .field textarea {width:100%;border:1px solid #dbe6e1;padding:11px 13px;border-radius:9px;background:#fff}
+.account-form .field textarea {resize:vertical;min-height:85px}
+.account-form .field {display:grid;gap:7px}
+.account-delete-warning {display:flex;gap:12px;padding:14px;border:1px solid #fecaca;background:#fff5f5;color:#a42525;border-radius:10px}
+.account-delete-warning svg {flex:none}
+.account-delete-warning p {display:grid;gap:6px}
+.account-delete-warning span {color:#5f4b4b;line-height:1.5}
+.account-check {display:flex;align-items:flex-start;gap:10px;line-height:1.5}
+.account-check input {width:18px;height:18px;flex:none;accent-color:#b42318}
+.account-log-search {border:1px solid #dbe6e1;border-radius:9px;display:flex;align-items:center;gap:9px;padding:8px 12px}
+.account-log-search input {border:0;min-height:28px;outline:0}
+.account-reason {max-width:320px;overflow-wrap:anywhere;white-space:normal}
+.cashier-management .card {box-shadow:none}
+@media(max-width:768px){.account-toolbar-actions{width:100%}.account-search{max-width:none;flex:1}.account-row-actions .btn{min-height:44px}}

@@ -1,3 +1,5 @@
+> **Update:** This was the previous Admin Management setup guide. For the newer Cashier Management, Delete/Reason/PIN, and Cloud Activity Logs version, follow `ACCOUNT_SECURITY_SETUP.md` and the `202610170002_account_audit_and_deletion.sql` migration.
+
 # HappyTech – Supabase Admin Management setup
 
 This update builds on the working account selector, Super Admin login, and first-time PIN change. It does NOT replace sales/inventory browser mock data, cashier account UI, system log UI, or PIN recovery.

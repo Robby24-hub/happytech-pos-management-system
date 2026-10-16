@@ -1,5 +1,7 @@
 # HappyTech authentication foundation
 
+**Updated October 17, 2026:** Account Management and cloud security Activity Logs are now included in this branch. See **`ACCOUNT_SECURITY_SETUP.md`** for the latest SQL migration and deployment order. The original first-run instructions below remain for new installations only.
+
 This branch replaces the frontend-only demo role selector with a Supabase-backed account selector and PIN authentication. It does **not** migrate POS sales, inventory, Admin Settings cashier management, logs, or Super Admin management into Supabase yet. Do not deploy this build as a production POS until those workflows are connected and tested.
 
 ## First run
@@ -22,13 +24,12 @@ select public.set_account_pin('REPLACE_UUID','REPLACE_PIN');
 
 The login chooser lists the account; use the PIN to sign in. The account will be forced to choose a new PIN. Do not leave a temporary credential in documentation or source code.
 
-## What remains to implement before a real rollout
+## What remains before a real rollout
 
-- Move Admin > Cashier Accounts and Super Admin > Admin Management to `account-auth` server actions (the Edge Function includes a role-restricted `create-account` endpoint but the management screens still use mock data). Never keep profile credentials in browser `localStorage`.
-- Build Admin-verified Cashier PIN reset server action; the current Forgot PIN screen instructs Cashiers to ask an Admin but does **not** yet perform that flow.
-- Wire full admin email recovery state, account setup invitation, and audit logging. Recovery requires the recovery session to change PIN; never allow password reset alone to replace PIN verification.
-- Implement online profile/account deactivation, server-side audit reads with RLS, avatar upload policies, rate limits keyed by account AND IP (WAF / gateway), and platform security tests.
-- Replace the demo local accounts and mocked app state with PostgreSQL data, followed by offline synchronization and queue handling.
+- Account management, Account PIN changes, and security audit display now have Cloud-backed implementations; **deploy the newest migration and `account-auth` Edge Function** before using them.
+- Admin recovery emails, a fully verified email-to-PIN recovery flow, rate limiting by IP and device, image-content verification, stronger session revocation, and transactional audit durability still require further work.
+- POS sales, inventory, product reports, and backup/restoration remain browser mock data. Cloud business-data migration and offline transaction synchronization are separate later phases.
+- Account hard deletion is for disposable test users only at present; archive accounts with real sales or other legally required records instead.
 
 ## Important limitations
 

@@ -1,5 +1,28 @@
 import { Activity, ShieldCheck, Users } from "lucide-react";
-export default function SuperDashboard({ state }) {
-  const admins = state.users.filter(u=>u.role === "Admin");
-  return <main className="main"><p className="eyebrow">SUPER ADMIN</p><h2 className="text-2xl">System Overview</h2><p className="helper mt-2">Administration and security activity</p><div className="super-stats"><section className="card"><ShieldCheck/><strong>{admins.length}</strong><span>Admin accounts</span></section><section className="card"><Users/><strong>{admins.filter(u=>u.active).length}</strong><span>Active Admins</span></section><section className="card"><Activity/><strong>{state.logs.length}</strong><span>Recent local activity</span></section></div><section className="card p-6"><h2>Recent System Logs</h2><p className="helper mb-4">Business actions are still mock data until cloud migration.</p>{state.logs.slice(0,12).map(l=><div className="system-event" key={l.id}><span>{l.actor} — {l.action}</span><time>{new Date(l.date).toLocaleString("en-PH")}</time></div>)}{state.logs.length===0 && <p className="helper">No activity has been recorded yet.</p>}</section></main>;
+import { useEffect, useState } from "react";
+import { accountAction } from "../lib/supabase";
+import { ActivityList } from "./ActivityLogs";
+
+export default function SuperDashboard() {
+  const [summary, setSummary] = useState({total:0,active:0});
+  const [error, setError] = useState("");
+  useEffect(() => {
+    let active=true;
+    accountAction({action:"list-admins"})
+      .then(({admins=[]}) => {if(active)setSummary({total:admins.length,active:admins.filter(a=>a.active).length});})
+      .catch(e=>{if(active)setError(e.message);});
+    return ()=>{active=false;};
+  }, []);
+  return <main className="main">
+    <p className="eyebrow">SUPER ADMIN</p>
+    <h2 className="text-2xl">System Overview</h2>
+    <p className="helper mt-2">Live administration overview and security audit activity from Supabase.</p>
+    {error && <p className="account-notice error-text" role="alert">{error}</p>}
+    <div className="super-stats mt-5">
+      <section className="card"><ShieldCheck/><strong>{summary.total}</strong><span>Admin accounts</span></section>
+      <section className="card"><Users/><strong>{summary.active}</strong><span>Active Admins</span></section>
+      <section className="card"><Activity/><strong>Cloud</strong><span>Security activity recorded</span></section>
+    </div>
+    <ActivityList compact limit={12}/>
+  </main>;
 }

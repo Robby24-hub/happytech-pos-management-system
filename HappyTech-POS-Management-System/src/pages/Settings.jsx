@@ -23,6 +23,8 @@ import {
   Empty,
 } from "../components/UI";
 import { dateTime } from "../data/mock";
+import CashierManagement from "./CashierManagement";
+import { accountAction } from "../lib/supabase";
 const sections = [
   ["Store Information", "imgStore"],
   ["Cashier Accounts", "imgUsersRound"],
@@ -61,56 +63,24 @@ export default function Settings({
     setDraft({ ...data });
     setError("");
   };
-  const save = (e) => {
+  const save = async (e) => {
     e.preventDefault();
-    if (edit === "account") {
-      if (draft.pin && !/^\d{4}$/.test(draft.pin)) {
-        setError("Enter exactly 4 digits for the PIN.");
-        return;
+    setError("");
+    try {
+      if (edit === "account") {
+        if (!draft.pin) throw new Error("Enter a new four-digit PIN. Updating account names will be added with cloud profile editing.");
+        if (!/^\d{4}$/.test(draft.pin)) throw new Error("Enter exactly four digits for your new PIN.");
+        await accountAction({ action: "change-pin", newPin: draft.pin });
+        notify("Your account PIN was updated in Supabase.");
+      } else {
+        update(
+          (s) => ({ ...s, settings: { ...s.settings, ...draft } }),
+          `Updated ${tab} (local demo data)`,
+        );
+        notify("Demo settings saved");
       }
-      update(
-        (s) => ({
-          ...s,
-          users: s.users.map((u) =>
-            u.id === user.id
-              ? { ...u, name: draft.name, pin: draft.pin || u.pin }
-              : u,
-          ),
-        }),
-        "Updated own account",
-      );
-    } else if (edit === "cashier") {
-      if (!/^\d{4}$/.test(draft.pin)) {
-        setError("Enter exactly 4 digits for the PIN.");
-        return;
-      }
-      const u = {
-        ...draft,
-        id: draft.id || crypto.randomUUID(),
-        role: "Cashier",
-        active: draft.active ?? true,
-      };
-      update(
-        (s) => ({
-          ...s,
-          users: draft.id
-            ? s.users.map((x) => (x.id === u.id ? u : x))
-            : [...s.users, u],
-        }),
-        `${draft.id ? "Updated" : "Created"} cashier ${u.name}`,
-      );
-    } else {
-      if (edit === "security" && !/^\d{4}$/.test(draft.recoveryPin)) {
-        setError("Recovery PIN must contain 4 digits.");
-        return;
-      }
-      update(
-        (s) => ({ ...s, settings: { ...s.settings, ...draft } }),
-        `Updated ${tab}`,
-      );
-    }
-    setEdit(null);
-    notify("Changes saved");
+      setEdit(null);
+    } catch (err) { setError(err.message); }
   };
   const backup = () => {
     const record = {
@@ -256,72 +226,7 @@ export default function Settings({
             </div>
           </Card>
         )}
-        {tab === "Cashier Accounts" && (
-          <Card className="overflow-hidden">
-            <div className="flex justify-between items-center p-5">
-              <h2>Cashier accounts</h2>
-              <Button
-                primary
-                onClick={() =>
-                  open("cashier", { name: "", pin: "", active: true })
-                }
-              >
-                <Plus size={18} />
-                Add Cashier
-              </Button>
-            </div>
-            <div className="table-scroll">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {state.users
-                    .filter((u) => u.role === "Cashier")
-                    .map((u) => (
-                      <tr key={u.id}>
-                        <td>{u.name}</td>
-                        <td>
-                          <Badge tone={u.active ? "green" : "gray"}>
-                            {u.active ? "Active" : "Inactive"}
-                          </Badge>
-                        </td>
-                        <td>
-                          <div className="flex gap-2">
-                            <Button onClick={() => open("cashier", u)}>
-                              Edit / Reset PIN
-                            </Button>
-                            <Button
-                              onClick={() => {
-                                update(
-                                  (s) => ({
-                                    ...s,
-                                    users: s.users.map((x) =>
-                                      x.id === u.id
-                                        ? { ...x, active: !x.active }
-                                        : x,
-                                    ),
-                                  }),
-                                  `${u.active ? "Deactivated" : "Reactivated"} ${u.name}`,
-                                );
-                                notify("Account status updated");
-                              }}
-                            >
-                              {u.active ? "Deactivate" : "Reactivate"}
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
-          </Card>
-        )}
+        {tab === "Cashier Accounts" && <CashierManagement />}
         {tab === "Payments" && (
           <Card className="p-6">
             <div className="flex justify-between mb-6">
@@ -418,32 +323,16 @@ export default function Settings({
               ])}
               <div className="settings-footer">
                 <Button
-                  onClick={() => open("account", { name: user.name, pin: "" })}
+                  onClick={() => open("account", { pin: "" })}
                 >
                   <Pencil size={16} />
-                  Edit Account / PIN
+                  Change PIN
                 </Button>
               </div>
             </Card>
             <Card className="p-6 mt-5">
-              <h2 className="mb-4">Account Recovery</h2>
-              {fields([
-                ["Security Question", settings.question],
-                ["Recovery PIN", "••••"],
-              ])}
-              <div className="settings-footer">
-                <Button
-                  onClick={() =>
-                    open("security", {
-                      question: settings.question,
-                      answer: settings.answer,
-                      recoveryPin: settings.recoveryPin,
-                    })
-                  }
-                >
-                  Edit Recovery
-                </Button>
-              </div>
+              <h2 className="mb-4">Email Recovery</h2>
+              <p className="helper">Admins can request an email recovery link from the sign-in screen. This is separate from the old browser-only recovery questions. The end-to-end email PIN recovery workflow still requires security testing before production.</p>
             </Card>
           </>
         )}
@@ -494,8 +383,6 @@ export default function Settings({
               receipt: "Edit Receipt",
               preferences: "Edit Sales & Inventory",
               account: "My Account",
-              security: "Recovery Options",
-              cashier: draft.id ? "Edit Cashier" : "Add Cashier",
             }[edit]
           }
           onClose={() => setEdit(null)}
