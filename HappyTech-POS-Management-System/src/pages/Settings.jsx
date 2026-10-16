@@ -332,7 +332,7 @@ export default function Settings({
             </Card>
             <Card className="p-6 mt-5">
               <h2 className="mb-4">Email Recovery</h2>
-              <p className="helper">Admins can request an email recovery link from the sign-in screen. This is separate from the old browser-only recovery questions. The end-to-end email PIN recovery workflow still requires security testing before production.</p>
+              <p className="helper">Admins can reset their PIN using a verified Supabase email recovery link from the login page. Recovery grants are single-use and expire after five minutes.</p>
             </Card>
           </>
         )}

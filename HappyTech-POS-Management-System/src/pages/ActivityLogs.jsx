@@ -10,6 +10,8 @@ const names = {
   admin_deactivated: "Admin deactivated", cashier_activated: "Cashier activated",
   cashier_deactivated: "Cashier deactivated", admin_deleted: "Admin permanently deleted",
   cashier_deleted: "Cashier permanently deleted",
+  cashier_forgot_pin_reset: "Cashier PIN recovered with Admin verification",
+  email_pin_recovery_success: "PIN recovered through verified email",
 };
 export function ActivityList({ limit, compact = false }) {
   const [logs, setLogs] = useState([]);

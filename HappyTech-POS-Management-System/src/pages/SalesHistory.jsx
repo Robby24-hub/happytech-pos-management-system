@@ -11,6 +11,7 @@ import {
   Empty,
 } from "../components/UI";
 import { money, dateTime, within } from "../data/mock";
+import { accountAction } from "../lib/supabase";
 import Receipt, { exportPDF } from "../components/Receipt";
 export default function SalesHistory({ state, update, user, notify }) {
   const [search, setSearch] = useState(""),
@@ -40,17 +41,13 @@ export default function SalesHistory({ state, update, user, notify }) {
     ),
     `Net sales: ${money(sales.filter((s) => s.status !== "Refunded").reduce((n, s) => n + s.total, 0))}`,
   ];
-  const doRefund = (e) => {
+  const doRefund = async (e) => {
     e.preventDefault();
-    const valid = state.users.some(
-      (u) =>
-        u.active &&
-        u.pin === pin &&
-        (user.role === "Cashier" ? u.id === user.id : u.role !== "Cashier"),
-    );
-    if (!valid) {
-      setError("Incorrect PIN. Demo PIN: 1234.");
-      return;
+    if (!/^\d{4}$/.test(pin)) {setError("Enter your four-digit PIN.");return;}
+    try {
+      await accountAction({action:"verify-action-pin",pin});
+    } catch {
+      setPin("");setError("PIN verification failed. Try again or contact an administrator.");return;
     }
     if (current.status === "Refunded") return;
     update(

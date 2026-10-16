@@ -26,28 +26,24 @@ export const seedUsers = [
     id: "owner",
     name: "Ricky Yurag",
     role: "Admin",
-    pin: "1234",
     active: true,
   },
   {
     id: "maria",
     name: "Maria Santos",
     role: "Cashier",
-    pin: "1234",
     active: true,
   },
   {
     id: "rogelio",
     name: "Rogelio Reyes",
     role: "Cashier",
-    pin: "1234",
     active: true,
   },
   {
     id: "super",
     name: "System Administrator",
     role: "Super Admin",
-    pin: "1234",
     active: true,
   },
 ];
@@ -88,7 +84,6 @@ export const seedSettings = {
   dailyTarget: 20000,
   weeklyTarget: 100000,
   monthlyTarget: 400000,
-  recoveryPin: "4321",
   question: "What is your favorite color?",
   answer: "green",
 };

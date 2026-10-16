@@ -1,9 +1,9 @@
 # Project rules
 
 - Official system name: HappyTech POS & Management System.
-- Build the frontend first using mock data.
+- Preserve the existing React/Vite frontend. Business transactions and inventory still use mock data, while the authentication and account-management foundation uses Supabase.
 - Use JavaScript and standard CSS. Inspect package.json before changing the project and preserve the existing Vite + React setup.
-- No backend, database server, real authentication, or payment API integration at this stage.
+- Supabase Auth, PostgreSQL RPCs, and the account-auth Edge Function are already integrated for login, account management, Activity Logs and secure PIN recovery. Do not replace them with mock authentication. Sales/inventory and payment integrations are future stages.
 - Follow the reference design closely. Do not replace it with a generic dashboard.
 - Before implementing screens, inspect the project and design-reference/ files and use the Figma integration when available to inspect actual screens and assets. Never claim Figma was inspected unless access succeeded.
 - If Figma is inaccessible, report that and use the HTML/CSS references. Ask for screenshots only when necessary to resolve important design details.
@@ -18,7 +18,7 @@
 
 # Current stage
 
-Inspection and project instructions only. Do not implement screens, change application behavior, or add dependencies during this stage.
+Current implementation stage: working cloud account management with role-specific PIN recovery. Preserve existing features. Only modify scope explicitly requested by the user, and require RLS / Edge Function server-side authorization for sensitive actions.
 
 # Proposed implementation structure
 

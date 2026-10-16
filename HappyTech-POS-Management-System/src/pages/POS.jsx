@@ -17,6 +17,7 @@ import {
   Empty,
 } from "../components/UI";
 import { money } from "../data/mock";
+import { accountAction, listRecoveryAdmins } from "../lib/supabase";
 import Receipt from "../components/Receipt";
 export default function POS({ state, update, user, notify, navigate }) {
   const [search, setSearch] = useState(""),
@@ -28,6 +29,9 @@ export default function POS({ state, update, user, notify, navigate }) {
     [received, setReceived] = useState(""),
     [verified, setVerified] = useState(false),
     [pin, setPin] = useState(""),
+    [availableAdmins, setAvailableAdmins] = useState([]),
+    [approvedAdminId, setApprovedAdminId] = useState(""),
+    [verifyingTransfer, setVerifyingTransfer] = useState(false),
     [error, setError] = useState(""),
     [transferQty, setTransferQty] = useState(1),
     [receipt, setReceipt] = useState(null);
@@ -66,6 +70,7 @@ export default function POS({ state, update, user, notify, navigate }) {
     const product = state.products.find((x) => x.id === p.id);
     if (product.stock - used(p.id) < p.multiplier) {
       setModal({ type: "transfer", product: p });
+      listRecoveryAdmins().then(list => {setAvailableAdmins(list);setApprovedAdminId(list[0]?.id || "");}).catch(()=>setError("Unable to load Admin accounts. Try again later."));
       setTransferQty(p.multiplier);
       setPin("");
       setError("");
@@ -105,21 +110,16 @@ export default function POS({ state, update, user, notify, navigate }) {
           ),
     );
   };
-  const transfer = (e) => {
+  const transfer = async (e) => {
     e.preventDefault();
     const p = state.products.find((p) => p.id === modal.product.id);
-    if (
-      !state.users.some(
-        (u) => u.role !== "Cashier" && u.active && u.pin === pin,
-      )
-    ) {
-      setError("Incorrect owner PIN. Demo owner PIN: 1234.");
-      return;
-    }
-    if (transferQty <= 0 || transferQty > p.wholesale) {
-      setError("Enter a quantity within available wholesale stock.");
-      return;
-    }
+    if (!approvedAdminId || !/^\d{4}$/.test(pin)) {setError("Select an Admin and enter their PIN.");return;}
+    if (!p) {setError("Product not found.");return;}
+    if (transferQty <= 0 || transferQty > p.wholesale) {setError("Enter a valid wholesale stock quantity.");return;}
+    setVerifyingTransfer(true);
+    try {await accountAction({action:"verify-admin-approval",adminId:approvedAdminId,managerPin:pin});}
+    catch {setError("Admin verification failed. Check the PIN or account status.");setPin("");setVerifyingTransfer(false);return;}
+    setVerifyingTransfer(false);setPin("");
     update(
       (s) => ({
         ...s,
@@ -501,8 +501,9 @@ export default function POS({ state, update, user, notify, navigate }) {
                 value={transferQty}
                 onChange={(e) => setTransferQty(Number(e.target.value))}
               />
+              <Field label="Approving Admin"><select value={approvedAdminId} onChange={e=>setApprovedAdminId(e.target.value)} required><option value="">Choose an Admin</option>{availableAdmins.map(a=><option key={a.id} value={a.id}>{a.name}</option>)}</select></Field>
               <Field
-                label="Owner's 4-digit PIN"
+                label="Admin's 4-digit PIN"
                 type="password"
                 inputMode="numeric"
                 maxLength={4}
@@ -515,7 +516,7 @@ export default function POS({ state, update, user, notify, navigate }) {
                 <Button type="button" onClick={() => setModal(null)}>
                   Cancel
                 </Button>
-                <Button primary disabled={pin.length !== 4}>
+                <Button primary disabled={pin.length !== 4 || !approvedAdminId || verifyingTransfer}>
                   Approve Transfer
                 </Button>
               </div>

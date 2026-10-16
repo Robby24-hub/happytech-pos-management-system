@@ -42,6 +42,25 @@ const uploadAvatar = async (id:string, dataUrl:unknown) => {
   return service.storage.from('account-avatars').getPublicUrl(key).data.publicUrl
 }
 
+// Grants are short-lived, unguessable and kept in the React component memory.
+const newGrant = () => {
+  const bytes = crypto.getRandomValues(new Uint8Array(32))
+  return Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('')
+}
+const hashGrant = async (token:string) => {
+  const hashed = await crypto.subtle.digest('SHA-256',new TextEncoder().encode(token))
+  return Array.from(new Uint8Array(hashed),b=>b.toString(16).padStart(2,'0')).join('')
+}
+const insertGrant = async (kind:'email'|'cashier', actorId:string, targetId:string) => {
+  const grant=newGrant()
+  const token_hash=await hashGrant(grant)
+  const expires_at = new Date(Date.now() + 5*60*1000).toISOString()
+  const {error}=await service.from('pin_recovery_grants').insert({kind,actor_id:actorId,target_id:targetId,token_hash,expires_at})
+  if(error)throw error
+  return grant
+}
+const recoverFailed = () => reply({error:'Verification failed or expired. Start the recovery process again.'},401)
+
 Deno.serve(async(req) => {
   if(req.method==='OPTIONS')return new Response(null,{headers:cors})
   if(req.method!=='POST')return reply({error:'Method not allowed'},405)
@@ -65,6 +84,40 @@ Deno.serve(async(req) => {
       return reply({token_hash:link.properties.hashed_token})
     }
 
+    // Recovery actions do not use ordinary authenticated sessions.
+    // Each action must instead prove an Admin PIN or consume a Supabase "recovery" OTP.
+    if(body.action==='begin-cashier-recovery') {
+      if(!uuidValid(body.cashierId)||!uuidValid(body.adminId)||!pinValid(body.adminPin))return recoverFailed()
+      const {data:cashier}=await service.from('profiles').select('id,active,role').eq('id',body.cashierId).maybeSingle()
+      const {data:manager}=await service.from('profiles').select('id,active,role,must_change_pin').eq('id',body.adminId).maybeSingle()
+      if(!cashier?.active||cashier.role!=='Cashier'||!manager?.active||manager.role!=='Admin'||manager.must_change_pin)return recoverFailed()
+      // Serialized PIN failure counters and lockouts apply to the manager account.
+      if(!await selfVerified(manager.id,body.adminPin))return recoverFailed()
+      const grant=await insertGrant('cashier',manager.id,cashier.id)
+      return reply({grant})
+    }
+    if(body.action==='finish-cashier-recovery'||body.action==='finish-email-recovery') {
+      const kind=body.action==='finish-email-recovery'?'email':'cashier'
+      if(typeof body.grant!=='string'||!/^([a-f0-9]{64})$/.test(body.grant)||!pinValid(body.newPin))return recoverFailed()
+      const hashed=await hashGrant(body.grant)
+      const {data,error}=await service.rpc('complete_pin_recovery',{p_token_hash:hashed,p_kind:kind,p_pin:body.newPin})
+      if(error){console.error('Recovery completion DB error:',error.message);return reply({error:'Unable to reset PIN. Please try again.'},500)}
+      if(data!==true)return recoverFailed()
+      return reply({ok:true})
+    }
+    if(body.action==='begin-email-recovery') {
+      // Only an unexpired, single-use Supabase Auth recovery OTP can open this flow.
+      // Normal Supabase login sessions and magic links do NOT qualify.
+      if(typeof body.tokenHash!=='string'||!(/^[a-zA-Z0-9_-]{8,512}$/.test(body.tokenHash)))return recoverFailed()
+      const oneTimeAuth = createClient(url,Deno.env.get('SUPABASE_ANON_KEY')!,{auth:{autoRefreshToken:false,persistSession:false,detectSessionInUrl:false}})
+      const {data:verified,error}=await oneTimeAuth.auth.verifyOtp({token_hash:body.tokenHash,type:'recovery'})
+      if(error||!verified.user?.id)return recoverFailed()
+      const {data:person}=await service.from('profiles').select('id,role,active').eq('id',verified.user.id).maybeSingle()
+      if(!person?.active||!['Admin','Super Admin'].includes(person.role))return recoverFailed()
+      const grant=await insertGrant('email',person.id,person.id)
+      return reply({grant})
+    }
+
     // -- The Edge Function always verifies bearer JWTs for protected actions. --
     const header=req.headers.get('Authorization')||''
     const bearer=header.match(/^Bearer\s+(.+)$/i)?.[1]
@@ -86,6 +139,19 @@ Deno.serve(async(req) => {
     }
     // Prevent use of administrative actions before the mandatory PIN change.
     if(profile.must_change_pin)return reply({error:'Change your temporary PIN first'},403)
+
+    // Legacy mock POS approvals and refunds still exist. Never check a
+    // plaintext browser-stored demo PIN; validate against cloud credentials.
+    if(body.action==='verify-action-pin') {
+      if(!['Cashier','Admin'].includes(profile.role)||!await selfVerified(user.id,body.pin))return denied()
+      return reply({ok:true})
+    }
+    if(body.action==='verify-admin-approval') {
+      if(!uuidValid(body.adminId)||!pinValid(body.managerPin))return denied()
+      const {data:manager}=await service.from('profiles').select('id,role,active,must_change_pin').eq('id',body.adminId).maybeSingle()
+      if(!manager?.active||manager.role!=='Admin'||manager.must_change_pin||!await selfVerified(manager.id,body.managerPin))return denied()
+      return reply({ok:true})
+    }
 
     if(body.action==='logout') {
       await audit({...actor,action:'logout'})

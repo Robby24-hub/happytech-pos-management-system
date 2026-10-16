@@ -4,13 +4,18 @@ const url = import.meta.env.VITE_SUPABASE_URL;
 const anon = import.meta.env.VITE_SUPABASE_ANON_KEY;
 export const configured = Boolean(url && anon);
 export const supabase = configured ? createClient(url, anon, {
-  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false },
 }) : null;
 
 export async function listAccounts() {
   const { data, error } = await supabase.rpc("list_login_accounts");
   if (error) throw error;
   return data;
+}
+export async function listRecoveryAdmins() {
+  const { data, error } = await supabase.rpc("list_recovery_admins");
+  if (error) throw error;
+  return data ?? [];
 }
 async function functionError(error, data, fallback) {
   if (data?.error) return new Error(data.error);

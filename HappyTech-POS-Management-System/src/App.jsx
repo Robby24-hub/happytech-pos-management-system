@@ -21,16 +21,28 @@ import ActivityLogs from "./pages/ActivityLogs";
 import SuperDashboard from "./pages/SuperDashboard";
 import AdminManagement from "./pages/AdminManagement";
 import ChangePin from "./pages/ChangePin";
+import ResetPin from "./pages/ResetPin";
 import { supabase, configured, getProfile, accountAction } from "./lib/supabase";
 const KEY = "happytech-demo-v1";
+function scrubDemoCredentials(state) {
+  // Older mock builds saved demonstration PINs in the browser. Strip them from
+  // the in-memory demo state, new localStorage writes and imported backups.
+  if (!state || typeof state !== "object") return state;
+  const { recoveryPin: _legacyRecoveryPin, ...settings } = state.settings || {};
+  return {
+    ...state,
+    settings,
+    users: Array.isArray(state.users) ? state.users.map(({pin: _legacyPin, ...account}) => account) : [],
+  };
+}
 function readState() {
   try {
     const s = JSON.parse(localStorage.getItem(KEY));
-    return s?.products && s?.settings && s?.sales && s?.users
+    return scrubDemoCredentials(s?.products && s?.settings && s?.sales && s?.users
       ? s
-      : structuredClone(seedState);
+      : structuredClone(seedState));
   } catch {
-    return structuredClone(seedState);
+    return scrubDemoCredentials(structuredClone(seedState));
   }
 }
 export default function App() {
@@ -38,7 +50,6 @@ export default function App() {
     [userId, setUserId] = useState(null),
     [cloudUser, setCloudUser] = useState(null),
     [authLoading, setAuthLoading] = useState(true),
-    [recoveryMode,setRecoveryMode] = useState(false),
     [page, setPage] = useState("dashboard"),
     [toast, setToast] = useState(""),
     [overlay, setOverlay] = useState(null),
@@ -57,12 +68,12 @@ export default function App() {
   useEffect(() => {
     if (!configured) { setAuthLoading(false); return; }
     refreshAuth();
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => { if(event === "PASSWORD_RECOVERY") setRecoveryMode(true); setTimeout(refreshAuth, 0); });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => { setTimeout(refreshAuth, 0); });
     return () => subscription.unsubscribe();
   }, [refreshAuth]);
   useEffect(() => {
     try {
-      localStorage.setItem(KEY, JSON.stringify(state));
+      localStorage.setItem(KEY, JSON.stringify(scrubDemoCredentials(state)));
       setStorageError(false);
     } catch {
       setStorageError(true);
@@ -124,8 +135,19 @@ export default function App() {
     ["settings", "Settings", "imgSettings"],
   ];
   if (!configured) return <div className="config-needed"><h1>Supabase setup required</h1><p>Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your .env.local file. See SETUP_AUTH.md.</p></div>;
+  // Dedicated recovery route is intentionally checked BEFORE the ordinary
+  // session-based app. PIN recovery is never authorized by a normal JWT alone.
+  if (window.location.pathname === "/reset-pin") {
+    const returnToLogin = async () => {
+      await supabase.auth.signOut({ scope: "local" }).catch(() => {});
+      window.history.replaceState({}, "", "/");
+      setCloudUser(null);
+      window.location.assign("/");
+    };
+    return <ResetPin onBack={returnToLogin} onComplete={returnToLogin}/>;
+  }
   if (authLoading) return <div className="config-needed">Checking account session...</div>;
-  if (user && (user.must_change_pin || recoveryMode)) return <ChangePin onDone={async()=>{setRecoveryMode(false);await refreshAuth();}}/>;
+  if (user?.must_change_pin) return <ChangePin onDone={refreshAuth}/>;
   if (!user)
     return (
       <>
