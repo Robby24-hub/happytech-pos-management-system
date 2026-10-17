@@ -1,0 +1,13 @@
+ HappyTech-POS-Management-System/package-lock.json  | 114 [32m++[m[31m---[m
+ HappyTech-POS-Management-System/src/App.css        | 184 [31m-------[m
+ .../src/components/Chart.jsx                       |  61 [31m---[m
+ .../src/components/Receipt.jsx                     | 107 [31m-----[m
+ .../src/components/UI.jsx                          | 203 [31m--------[m
+ .../src/pages/Administration.jsx                   | 214 [31m---------[m
+ .../src/pages/Dashboard.jsx                        | 167 [31m-------[m
+ .../src/pages/Inventory.jsx                        | 530 [31m---------------------[m
+ HappyTech-POS-Management-System/src/pages/POS.jsx  | 529 [31m--------------------[m
+ .../src/pages/Reports.jsx                          | 222 [31m---------[m
+ .../src/pages/SalesHistory.jsx                     | 233 [31m---------[m
+ .../src/pages/Settings.jsx                         | 525 [31m--------------------[m
+ 12 files changed, 57 insertions(+), 3032 deletions(-)
