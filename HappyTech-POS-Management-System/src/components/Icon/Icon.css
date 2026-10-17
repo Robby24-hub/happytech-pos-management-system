@@ -1,0 +1,11 @@
+/* Icon: local styles and responsive overrides. Shared theme/utilities come from index.css. */
+@reference "../../index.css";
+@layer components.ui {
+  .asset-icon {
+    @apply inline-flex shrink-0 items-center justify-center;
+  }
+  .asset-icon img {
+    display: block;
+    max-width: none;
+  }
+}

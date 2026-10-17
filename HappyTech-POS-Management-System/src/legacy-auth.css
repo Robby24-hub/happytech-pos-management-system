@@ -1,0 +1,120 @@
+/* Account selection, PIN recovery, and Supabase account management from tested branch. */
+.account-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:28px;max-height:350px;overflow:auto;}
+.account-choice {min-height:120px;background:white;border:1px solid #dbe6e1;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;padding:12px;text-align:center;}
+.account-choice:hover,.account-choice:focus-visible {border-color:#1e9d75;background:#eaf7f1;}
+.account-avatar {display:flex;align-items:center;justify-content:center;width:54px;height:54px;border-radius:50%;background:#eaf7f1;color:#1e9d75;overflow:hidden;}
+.account-avatar img {width:100%;height:100%;object-fit:cover;}
+.account-avatar-large {margin:22px auto 10px;width:70px;height:70px;}
+.account-email,.pin-change-card input {width:100%;display:block;margin-top:9px;padding:13px;border:1px solid #dbe6e1;border-radius:10px;}
+.config-needed,.pin-change-screen {min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:30px;text-align:center;}
+.pin-change-card {width:min(100%,420px);background:white;text-align:left;padding:30px;display:grid;gap:18px;}
+.super-stats {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:22px 0;}
+.super-stats .card {padding:20px;display:grid;gap:10px;}
+.super-stats strong {font-size:28px;}
+.system-event {display:flex;justify-content:space-between;gap:15px;padding:12px;border-bottom:1px solid #dbe6e1;}
+.system-event time {color:#6e7e78;}
+@media(max-width:650px){.account-grid,.super-stats {grid-template-columns:repeat(2,minmax(0,1fr));}}
+
+/* Cloud account management — shared between Super Admin and Admin Settings */
+.account-toolbar {display:flex;align-items:center;justify-content:space-between;gap:18px;padding:20px 24px;flex-wrap:wrap}
+.account-toolbar-actions {display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.account-search {min-width:180px;max-width:240px}
+.account-cell {display:flex;align-items:center;gap:12px;min-width:180px}
+.account-photo {width:44px;height:44px;border-radius:50%;object-fit:cover;flex:none}
+.account-initial {display:grid;place-items:center;background:#eaf7f1;color:#16754f;font-weight:800;font-size:17px}
+.account-row-actions {display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.account-row-actions .btn {min-height:38px;padding:8px 12px;font-size:12px}
+.account-notice {margin:14px 0;padding:12px 15px;border-radius:10px;border:1px solid #dbe6e1;background:#fff}
+.account-notice.success {color:#176948;background:#eaf7f1;border-color:#afe0ce}
+.account-notice.error-text {color:#a42525;border-color:#fecaca;background:#fff6f6}
+.account-form {display:grid;gap:17px}
+.account-form .field input,.account-form .field textarea {width:100%;border:1px solid #dbe6e1;padding:11px 13px;border-radius:9px;background:#fff}
+.account-form .field textarea {resize:vertical;min-height:85px}
+.account-form .field {display:grid;gap:7px}
+.account-delete-warning {display:flex;gap:12px;padding:14px;border:1px solid #fecaca;background:#fff5f5;color:#a42525;border-radius:10px}
+.account-delete-warning svg {flex:none}
+.account-delete-warning p {display:grid;gap:6px}
+.account-delete-warning span {color:#5f4b4b;line-height:1.5}
+.account-check {display:flex;align-items:flex-start;gap:10px;line-height:1.5}
+.account-check input {width:18px;height:18px;flex:none;accent-color:#b42318}
+.account-log-search {border:1px solid #dbe6e1;border-radius:9px;display:flex;align-items:center;gap:9px;padding:8px 12px}
+.account-log-search input {border:0;min-height:28px;outline:0}
+.account-reason {max-width:320px;overflow-wrap:anywhere;white-space:normal}
+.cashier-management .card {box-shadow:none}
+@media(max-width:768px){.account-toolbar-actions{width:100%}.account-search{max-width:none;flex:1}.account-row-actions .btn{min-height:44px}}
+
+/* LOGIN RESPONSIVENESS — 2026-10-17
+   Keep the body from scrolling at target tablet/laptop/desktop viewports.
+   Only the account chooser itself scrolls if there are too many accounts. */
+.login-screen {
+  width: 100%;
+  min-width: 0;
+  min-height: 100dvh;
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+  grid-template-columns: minmax(0,44%) minmax(0,56%);
+}
+.login-brand {
+  min-width: 0;
+  min-height: 0;
+  max-height: 100dvh;
+  padding: clamp(18px, 3vh, 40px) clamp(22px, 3vw, 48px);
+  gap: 12px;
+}
+.login-brand .text-2xl {font-size:clamp(18px,2vw,24px);}
+.login-hero {min-height:0; padding:clamp(5px,1.4vh,22px) 0;}
+.login-hero img {width:min(100%,270px);height:clamp(90px,20vh,190px);margin-bottom:clamp(6px,1.6vh,22px);}
+.login-hero h2 {font-size:clamp(16px,1.75vw,21px);}
+.login-hero > p {font-size:clamp(12px,1.1vw,15px);}
+.login-tip {padding:clamp(8px,1.5vh,14px) clamp(12px,1.5vw,20px);}
+.login-brand-tips .mt-4 {margin-top:10px;}
+.login-main {min-width:0;min-height:0;height:100dvh;overflow:hidden;padding:18px clamp(14px,3vw,38px) 28px;}
+.login-card {
+  box-sizing:border-box;
+  min-width:0;
+  width:min(100%,520px);
+  max-height:calc(100dvh - 58px);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  padding:clamp(16px,2.5vh,32px) clamp(18px,2.5vw,34px);
+}
+.login-card h1 {font-size:clamp(21px,2vw,28px);overflow-wrap:anywhere;}
+.login-card .helper {overflow-wrap:anywhere;}
+.login-card .account-grid {min-height:0;max-height:min(47dvh,340px);flex:0 1 auto;overflow-y:auto;overscroll-behavior:contain;margin-top:clamp(10px,2.2vh,24px);}
+.login-card .account-choice {min-width:0;min-height:clamp(88px,14vh,118px);padding:10px 5px;}
+.login-card .account-choice strong {font-size:clamp(11px,1.2vw,14px);max-width:100%;overflow-wrap:anywhere;}
+.login-card form {min-height:0;flex-shrink:0;margin-top:clamp(8px,1.6vh,20px);}
+.login-card .keypad {margin-top:clamp(7px,1.5vh,16px);gap:clamp(4px,.8vh,8px);}
+.login-card .keypad button {height:clamp(34px,5.5vh,48px);min-height:34px;font-size:clamp(15px,2.5vh,20px);}
+.login-card .pin-input {height:clamp(42px,6vh,56px);font-size:24px;}
+.login-card .account-avatar-large {margin:clamp(7px,2vh,20px) auto 7px;width:clamp(48px,7vh,70px);height:clamp(48px,7vh,70px);}
+.login-footer {bottom:8px;font-size:11px;}
+.recovery-heading-icon,.recovery-symbol {display:flex;align-items:center;justify-content:center;margin:10px auto;color:#1e9d75;background:#eaf7f1;border-radius:50%;width:48px;height:48px;flex-shrink:0;}
+.login-card .recovery-form {display:grid;gap:clamp(9px,1.5vh,15px);}
+.recovery-form label {display:block;font-weight:600;font-size:13px;color:#15213a;min-width:0;}
+.recovery-form input,.recovery-form select {width:100%;min-width:0;box-sizing:border-box;margin-top:7px;padding:11px 12px;border-radius:10px;border:1px solid #dbe6e1;color:#15213a;background:#fff;}
+.recovery-form button {justify-content:center;}
+.recovery-done {display:flex;align-items:center;flex-direction:column;gap:16px;text-align:center;margin:22px 0;}
+.recovery-screen {display:flex;align-items:center;justify-content:center;min-height:100dvh;padding:18px;background:#f6faf8;}
+.recovery-card {display:flex;align-items:stretch;flex-direction:column;gap:14px;width:min(100%,435px);border:1px solid #d7e1ea;border-radius:24px;padding:clamp(20px,4vw,35px);background:#fff;box-shadow:0 18px 30px #15213a12;}
+.recovery-card h1,.recovery-card > p {text-align:center;}
+.recovery-card h1 {font-size:clamp(22px,3vw,28px);font-weight:700;color:#15213a;}
+.recovery-card > .btn {justify-content:center;}
+@media (max-width:800px) {
+  .login-screen {grid-template-columns:minmax(0,1fr);}
+  .login-main {padding:16px 20px 28px;}
+  .login-card {width:min(100%,520px);}
+}
+@media (max-width:470px) {
+  .login-main {padding:12px 10px 28px;}
+  .login-card {padding:18px 14px;max-height:calc(100dvh - 45px);}
+  .login-card .account-grid {grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+}
+@media (max-height:650px) and (min-width:801px) {
+  .login-brand-tips .login-tip:last-child {display:none;}
+  .login-hero img {height:clamp(75px,17vh,120px);}
+  .login-card {padding-top:13px;padding-bottom:13px;}
+  .login-card .account-avatar-large {margin:6px auto;}
+}

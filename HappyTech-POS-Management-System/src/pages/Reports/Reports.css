@@ -1,0 +1,65 @@
+/* Reports: local styles and responsive overrides. Shared theme/utilities come from index.css. */
+@reference "../../index.css";
+@layer components.pages {
+  .period-controls {
+    @apply flex flex-wrap items-end gap-2 p-3.5;
+  }
+  .period-controls .field {
+    margin: 0;
+  }
+  .period-controls .field input {
+    min-height: 48px;
+  }
+  .reports-grid {
+    @apply grid grid-cols-[1.8fr_1fr] items-stretch gap-4;
+  }
+  .reports .stat {
+    min-height: 120px;
+  }
+  .reports .stat-value {
+    color: black;
+  }
+  .sales-breakdown {
+    @apply mt-4 grid grid-cols-3 gap-4 border-t border-line pt-4;
+  }
+  .sales-breakdown small {
+    @apply block text-muted;
+  }
+  .sales-breakdown b {
+    @apply mt-2 block text-lg;
+  }
+  .sales-breakdown > div:last-child b {
+    @apply text-green-700;
+  }
+  .payment-track {
+    @apply h-3 overflow-hidden rounded-r-full bg-mint;
+  }
+  .payment-track span {
+    @apply block h-full bg-green;
+  }
+  .payment-row {
+    @apply my-4 border-b border-line py-4;
+  }
+  .reports .sales-chart {
+    min-height: 230px;
+  }
+}
+@media (max-width: 800px) {
+  .reports-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 600px) {
+  .reports > .flex {
+    flex-direction: column;
+  }
+}
+@media print {
+  .reports-grid {
+    display: block;
+  }
+  .reports .card {
+    break-inside: avoid;
+    margin-bottom: 15px;
+  }
+}

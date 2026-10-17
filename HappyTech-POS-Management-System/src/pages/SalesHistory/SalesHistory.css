@@ -1,0 +1,79 @@
+/* SalesHistory: local styles and responsive overrides. Shared theme/utilities come from index.css. */
+@reference "../../index.css";
+@layer components.pages {
+  .sales-history {
+    padding-top: 26px;
+  }
+  .sales-history td {
+    height: 67px;
+  }
+  .sales-history table {
+    min-width: 850px;
+  }
+  .sales-history .select-wrap {
+    min-width: 200px;
+  }
+}
+@media (max-width: 600px) {
+  .sales-history .select-wrap {
+    min-width: 120px;
+  }
+}
+
+@layer components.pages {
+  .transaction-row {
+    cursor: pointer;
+  }
+  .transaction-drawer {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .transaction-drawer .modal-header {
+    flex-shrink: 0;
+  }
+  .transaction-drawer .modal-content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .transaction-drawer form {
+    overflow-y: auto;
+  }
+  .transaction-details {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .transaction-receipt {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .transaction-actions {
+    display: flex;
+    flex-shrink: 0;
+    flex-direction: column;
+    gap: 12px;
+    border-top: 1px solid var(--color-line);
+    padding-top: 16px;
+    margin-top: 16px;
+  }
+  .transaction-action-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .transaction-action-row .btn-danger {
+    background: #dc2626;
+    color: white;
+    border-color: #dc2626;
+  }
+  .transaction-action-row .btn-danger:hover {
+    background: #b91c1c;
+  }
+}

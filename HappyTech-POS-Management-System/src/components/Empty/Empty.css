@@ -1,0 +1,7 @@
+/* Empty: local styles and responsive overrides. Shared theme/utilities come from index.css. */
+@reference "../../index.css";
+@layer components.ui {
+  .empty {
+    @apply p-10 text-center text-muted;
+  }
+}

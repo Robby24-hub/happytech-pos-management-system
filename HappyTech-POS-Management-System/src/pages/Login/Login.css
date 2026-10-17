@@ -1,0 +1,127 @@
+/* Login: local styles and responsive overrides. Shared theme/utilities come from index.css. */
+@reference "../../index.css";
+@layer components.pages {
+  .login-screen {
+    @apply grid min-h-dvh grid-cols-[44%_56%] bg-[#f6faf8];
+  }
+  .login-brand {
+    @apply relative flex min-h-dvh flex-col justify-between overflow-hidden p-12 text-white;
+    background: linear-gradient(160deg, #0f1b33 0%, #12403a 55%, #0c825a 100%);
+  }
+  .login-brand:before {
+    content: "";
+    position: absolute;
+    width: 420px;
+    height: 420px;
+    top: -140px;
+    left: -140px;
+    border-radius: 50%;
+    background: #0a9f681a;
+    pointer-events: none;
+  }
+  .login-hero {
+    @apply relative py-10 text-center;
+  }
+  .login-hero img {
+    @apply mx-auto mb-6 h-55 w-80 max-w-full object-contain;
+  }
+  .login-hero h2 {
+    @apply mb-2 text-xl;
+  }
+  .login-hero > p {
+    @apply leading-relaxed text-white/80;
+  }
+  .login-tip {
+    @apply flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/10 px-5 py-4;
+  }
+  .login-tip p {
+    @apply text-white/80 text-[12px];
+  }
+  .login-main {
+    @apply relative flex min-h-dvh items-center justify-center px-10 py-14;
+  }
+  .login-card {
+    @apply w-full max-w-130 rounded-[28px] border border-[#d7e1ea] bg-white p-10 text-[#15213a];
+    box-shadow: 0 18px 30px #15213a12;
+  }
+  .login-card h1 {
+    @apply mb-2 text-center;
+  }
+  .role-choice {
+    @apply flex min-h-25 items-center gap-5 rounded-2xl border border-[#d7e1ea] p-5 text-left hover:border-green hover:bg-mint;
+  }
+  .role-choice > span:nth-child(2) {
+    @apply flex-1;
+  }
+  .role-choice strong {
+    @apply text-lg;
+  }
+  .role-choice small {
+    @apply mt-1 block leading-relaxed text-[#5979a5];
+  }
+  .role-symbol {
+    @apply flex size-14 shrink-0 items-center justify-center rounded-xl bg-[#f6faf8] text-[#5979a5];
+  }
+  .role-radio {
+    @apply size-6 shrink-0 rounded-full border border-[#d7e1ea];
+  }
+  .login-footer {
+    @apply absolute bottom-5 left-4 right-4 text-center text-[12px] text-[#5979a5];
+  }
+  .login-card form {
+    @apply mt-5;
+  }
+  .pin-input {
+    @apply h-14 w-full rounded-xl border border-line text-center text-3xl tracking-[18px];
+  }
+  .keypad {
+    @apply mt-4 grid grid-cols-3 gap-2;
+  }
+  .keypad button {
+    @apply flex h-12 items-center justify-center rounded-lg border border-line bg-[#f6faf8] text-xl font-semibold hover:bg-mint;
+  }
+}
+@media (max-width: 1100px) {
+  .login-brand {
+    padding: 30px;
+  }
+  .login-main {
+    padding: 40px 25px;
+  }
+  .login-card {
+    padding: 28px;
+  }
+}
+@media (max-width: 800px) {
+  .login-screen {
+    grid-template-columns: 1fr;
+  }
+  .login-brand {
+    display: none;
+  }
+  .login-card {
+    max-width: 480px;
+  }
+}
+@media (max-width: 600px) {
+  .login-main {
+    padding: 35px 16px 65px;
+  }
+  .login-card {
+    padding: 25px;
+  }
+  .login-card h1 {
+    font-size: 24px;
+  }
+  .role-choice {
+    padding: 16px;
+    gap: 12px;
+  }
+  .role-symbol {
+    width: 40px;
+    height: 44px;
+  }
+  .role-choice strong {
+    font-size: 16px;
+  }
+}

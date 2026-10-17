@@ -1,0 +1,72 @@
+/* Stat: local styles and responsive overrides. Shared theme/utilities come from index.css. */
+@reference "../../index.css";
+@layer components.ui {
+  .stat {
+    @apply flex min-h-27 items-center gap-4 p-4.5;
+  }
+  .stat-icon {
+    @apply flex size-12 shrink-0 items-center justify-center rounded-xl bg-[#09a071] text-white;
+  }
+  .stat-icon.alert {
+    @apply bg-red-50 text-red-500;
+  }
+  .stat-label {
+    @apply text-[11px] text-[#15213a];
+  }
+  .stat-value {
+    @apply mt-1 block text-[25px] leading-tight tracking-tight text-[#15213a];
+  }
+  .stat-caption {
+    @apply mt-1 text-[11px] text-[#5979a5];
+  }
+  .stat-caption b {
+    @apply text-green-700;
+  }
+}
+@media (max-width: 1100px) {
+  .stat {
+    gap: 10px;
+    padding: 14px;
+  }
+  .stat-value {
+    font-size: 22px;
+  }
+  .stat-icon {
+    width: 44px;
+    height: 44px;
+  }
+}
+@media (max-width: 600px) {
+  .stat-value {
+    font-size: 21px;
+  }
+  .stat {
+    padding: 12px;
+    gap: 9px;
+    min-height: 98px;
+  }
+  .stat-label {
+    font-size: 9px;
+  }
+  .stat-caption {
+    font-size: 10px;
+  }
+  .stat-icon {
+    width: 36px;
+    height: 42px;
+  }
+}
+
+@layer components.ui {
+  .stat-filter {
+    width: 100%;
+    text-align: left;
+  }
+  .stat-filter:hover {
+    border-color: var(--color-green);
+  }
+  .stat-filter[aria-pressed="true"] {
+    border-color: var(--color-green);
+    box-shadow: 0 0 0 1px var(--color-green);
+  }
+}

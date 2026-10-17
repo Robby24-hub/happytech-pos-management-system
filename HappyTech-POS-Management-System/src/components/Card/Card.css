@@ -1,0 +1,13 @@
+/* Card: local styles and responsive overrides. Shared theme/utilities come from index.css. */
+@reference "../../index.css";
+@layer components.ui {
+  .card {
+    @apply rounded-[14px] border border-line bg-white;
+    box-shadow: 0 4px 3px #10281e30;
+  }
+}
+@media print {
+  .card {
+    box-shadow: none !important;
+  }
+}

@@ -1,0 +1,59 @@
+/* Inventory: local styles and responsive overrides. Shared theme/utilities come from index.css. */
+@reference "../../index.css";
+@layer components.pages {
+  .product-name {
+    @apply flex min-h-12 items-center gap-3 text-left;
+  }
+  .inventory-art {
+    @apply flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-mint;
+  }
+  .toggle {
+    @apply flex h-6.5 w-10.5 shrink-0 items-center rounded-full bg-slate-300 px-1;
+  }
+  .toggle span {
+    @apply size-4.5 rounded-full bg-white;
+  }
+  .toggle.on {
+    @apply justify-end bg-green;
+  }
+  .inventory > .stats-grid {
+    @apply mb-4;
+  }
+  .inventory .stat {
+    min-height: 120px;
+  }
+  .inventory td {
+    height: 74px;
+  }
+  .inventory table {
+    min-width: 1000px;
+  }
+  .details-product {
+    @apply flex flex-col items-center gap-4 py-4;
+  }
+  .details-list {
+    @apply mt-5 grid grid-cols-2 gap-5;
+  }
+  .details-list dt {
+    @apply text-muted;
+  }
+  .details-list dd {
+    @apply text-right font-semibold break-all;
+  }
+}
+
+@layer components.pages {
+  .group-management-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .group-management-row small {
+    display: block;
+    margin-top: 4px;
+    color: var(--color-muted);
+  }
+}

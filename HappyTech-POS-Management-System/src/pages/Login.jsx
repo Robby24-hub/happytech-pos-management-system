@@ -1,3 +1,4 @@
+import "./Login/Login.css";
 import { useEffect, useState } from "react";
 import { ArrowLeft, Clock, Lightbulb, Delete, UserRound, Mail, ShieldCheck, CheckCircle2 } from "lucide-react";
 import { Button, Icon } from "../components/UI";

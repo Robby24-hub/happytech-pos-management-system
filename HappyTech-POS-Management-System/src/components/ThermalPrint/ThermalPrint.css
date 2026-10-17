@@ -1,0 +1,71 @@
+@page {
+  size: 80mm 297mm;
+  margin: 4mm;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  width: 72mm;
+  color: #000;
+  background: #fff;
+  font:
+    11px/1.5 "Courier New",
+    monospace;
+  overflow-wrap: anywhere;
+}
+h2 {
+  font-size: 16px;
+  margin: 6px 0;
+}
+p {
+  margin: 8px 0;
+}
+.receipt {
+  width: 100%;
+  max-width: none;
+  padding: 0;
+}
+.receipt h2,
+.receipt > p,
+.receipt > small,
+.thermal-heading {
+  text-align: center;
+}
+.receipt-item,
+.thermal-line,
+.flex {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.receipt-item {
+  margin: 10px 0;
+  break-inside: avoid;
+}
+.receipt-item small {
+  display: block;
+}
+.receipt-item b {
+  white-space: nowrap;
+}
+hr {
+  border: 0;
+  border-top: 1px dashed black;
+  margin: 12px 0;
+}
+.font-bold {
+  font-weight: bold;
+}
+.text-lg {
+  font-size: 15px;
+}
+.no-print {
+  display: none;
+}
+.thermal-entry {
+  padding: 10px 0;
+  border-bottom: 1px dashed black;
+  break-inside: avoid;
+}
