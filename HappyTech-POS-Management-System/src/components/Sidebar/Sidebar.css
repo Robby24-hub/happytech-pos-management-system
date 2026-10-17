@@ -34,7 +34,7 @@
     @apply mt-auto flex flex-col gap-2 pt-4;
   }
   .sidebar-toggle {
-    @apply hidden size-12 shrink-0 items-center justify-center rounded-xl text-black hover:bg-mint;
+    @apply flex size-12 shrink-0 items-center justify-center rounded-xl text-black hover:bg-mint;
   }
   .modal-overlay.sidebar-overlay {
     justify-content: flex-start;
