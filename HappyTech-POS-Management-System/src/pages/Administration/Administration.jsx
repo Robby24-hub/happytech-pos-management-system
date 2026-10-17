@@ -1,3 +1,4 @@
+import "./Administration.css";
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import {
@@ -41,8 +42,8 @@ export default function Administration({ state, update, user, notify, page }) {
         </h2>
         <p className="helper mt-2">
           {page === "logs"
-            ? "Actions performed in this browser demo."
-            : "Manage demo accounts and their interface access."}
+            ? "Recent account and store activity."
+            : "Manage accounts and their access."}
         </p>
       </div>
       <Card className="overflow-hidden">

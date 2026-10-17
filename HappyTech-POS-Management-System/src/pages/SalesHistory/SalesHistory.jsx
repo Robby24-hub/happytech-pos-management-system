@@ -1,5 +1,6 @@
+import "./SalesHistory.css";
 import { useState } from "react";
-import { Printer, Download, RotateCcw } from "lucide-react";
+import { Printer, Download, RotateCcw, Trash2 } from "lucide-react";
 import {
   Card,
   Button,
@@ -11,6 +12,7 @@ import {
   Empty,
 } from "../../components/UI";
 import { money, dateTime, within } from "../../data/mock";
+import { printThermal } from "../../components/ThermalPrint/ThermalPrint";
 import Receipt, { exportPDF } from "../../components/Receipt";
 export default function SalesHistory({ state, update, user, notify }) {
   const [search, setSearch] = useState(""),
@@ -20,6 +22,7 @@ export default function SalesHistory({ state, update, user, notify }) {
     [end, setEnd] = useState(""),
     [selected, setSelected] = useState(null),
     [refund, setRefund] = useState(false),
+    [remove, setRemove] = useState(false),
     [pin, setPin] = useState(""),
     [error, setError] = useState("");
   const sales = state.sales.filter(
@@ -40,6 +43,54 @@ export default function SalesHistory({ state, update, user, notify }) {
     ),
     `Net sales: ${money(sales.filter((s) => s.status !== "Refunded").reduce((n, s) => n + s.total, 0))}`,
   ];
+  const printSummary = () =>
+    printThermal(
+      <div>
+        <div className="thermal-heading">
+          <h2>{state.settings.storeName}</h2>
+          <p>
+            {state.settings.address}
+            <br />
+            {state.settings.contact}
+          </p>
+          <h2>Sales Summary</h2>
+          <p>
+            {period === "Custom" ? `${start} to ${end}` : period}
+            <br />
+            {payment}
+            <br />
+            {sales.length} transactions
+          </p>
+        </div>
+        <hr />
+        {sales.map((sale) => (
+          <div className="thermal-entry" key={sale.uuid}>
+            <strong>{sale.id}</strong>
+            <div>{dateTime(sale.date)}</div>
+            <div>{sale.cashier}</div>
+            <div className="thermal-line">
+              <span>
+                {sale.items.length} items · {sale.payment}
+              </span>
+              <b>{money(sale.total)}</b>
+            </div>
+            <small>{sale.status}</small>
+          </div>
+        ))}
+        <hr />
+        <div className="thermal-line">
+          <strong>NET SALES</strong>
+          <b>
+            {money(
+              sales
+                .filter((s) => s.status !== "Refunded")
+                .reduce((n, s) => n + s.total, 0),
+            )}
+          </b>
+        </div>
+      </div>,
+      "Sales Summary",
+    );
   const doRefund = (e) => {
     e.preventDefault();
     const valid = state.users.some(
@@ -49,7 +100,7 @@ export default function SalesHistory({ state, update, user, notify }) {
         (user.role === "Cashier" ? u.id === user.id : u.role !== "Cashier"),
     );
     if (!valid) {
-      setError("Incorrect PIN. Demo PIN: 1234.");
+      setError("Incorrect PIN. Please try again.");
       return;
     }
     if (current.status === "Refunded") return;
@@ -77,7 +128,7 @@ export default function SalesHistory({ state, update, user, notify }) {
   return (
     <main className="main sales-history">
       <div className="flex justify-end gap-3 mb-5 no-print">
-        <Button onClick={() => window.print()}>
+        <Button onClick={printSummary}>
           <Printer size={17} />
           Print Summary
         </Button>
@@ -148,18 +199,28 @@ export default function SalesHistory({ state, update, user, notify }) {
             </thead>
             <tbody>
               {sales.map((s) => (
-                <tr key={s.uuid}>
-                  <td>
-                    <button
-                      className="text-green-700 font-semibold text-left min-h-12"
-                      onClick={() => {
-                        setSelected(s);
-                        setRefund(false);
-                      }}
-                    >
-                      {s.id}
-                    </button>
-                  </td>
+                <tr
+                  key={s.uuid}
+                  tabIndex={0}
+                  className="transaction-row"
+                  aria-label={`View ${s.id}`}
+                  onClick={() => {
+                    setSelected(s);
+                    setRefund(false);
+                    setRemove(false);
+                    setError("");
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      setSelected(s);
+                      setRefund(false);
+                      setRemove(false);
+                      setError("");
+                    }
+                  }}
+                >
+                  <td className="text-green-700 font-semibold">{s.id}</td>
                   <td>{dateTime(s.date)}</td>
                   <td>{s.cashier}</td>
                   <td>{s.items.length}</td>
@@ -175,17 +236,53 @@ export default function SalesHistory({ state, update, user, notify }) {
           {!sales.length && <Empty>No transactions match these filters.</Empty>}
         </div>
         <footer className="table-footer">
-          Tap an invoice to view its details · {sales.length} records · Demo
-          local data
+          Click a row to view its details · {sales.length} records
         </footer>
       </Card>
       {current && (
         <Modal
-          title={refund ? "Refund Transaction" : "Transaction Details"}
+          title={
+            refund
+              ? "Refund Transaction"
+              : remove
+                ? "Delete Transaction"
+                : "Transaction Details"
+          }
+          className="transaction-drawer"
           drawer
           onClose={() => setSelected(null)}
         >
-          {refund ? (
+          {remove ? (
+            <div>
+              <p>
+                Permanently delete {current.id}? This removes the transaction
+                from sales history and reports. Stock levels will remain
+                unchanged.
+              </p>
+              <div className="modal-actions">
+                <Button onClick={() => setRemove(false)}>Cancel</Button>
+                <Button
+                  danger
+                  onClick={() => {
+                    update(
+                      (s) => ({
+                        ...s,
+                        sales: s.sales.filter(
+                          (sale) => sale.uuid !== current.uuid,
+                        ),
+                      }),
+                      `Deleted transaction ${current.id}`,
+                    );
+                    setSelected(null);
+                    setRemove(false);
+                    notify("Transaction deleted");
+                  }}
+                >
+                  Delete Transaction
+                </Button>
+              </div>
+            </div>
+          ) : refund ? (
             <form onSubmit={doRefund}>
               <p className="mb-5">
                 Refund {current.id} for <b>{money(current.total)}</b>? The full
@@ -210,24 +307,50 @@ export default function SalesHistory({ state, update, user, notify }) {
               </div>
             </form>
           ) : (
-            <>
-              <Receipt sale={current} settings={state.settings} />
-              <Button
-                danger
-                className="w-full mt-4"
-                disabled={current.status === "Refunded"}
-                onClick={() => {
-                  setRefund(true);
-                  setPin("");
-                  setError("");
-                }}
-              >
-                <RotateCcw size={17} />
-                {current.status === "Refunded"
-                  ? "Already Refunded"
-                  : "Refund Transaction"}
-              </Button>
-            </>
+            <div className="transaction-details">
+              <div className="transaction-receipt">
+                <Receipt
+                  sale={current}
+                  settings={state.settings}
+                  showActions={false}
+                />
+              </div>
+              <div className="transaction-actions no-print">
+                <div className="transaction-action-row">
+                  <Button
+                    disabled={current.status === "Refunded"}
+                    onClick={() => {
+                      setRefund(true);
+                      setPin("");
+                      setError("");
+                    }}
+                  >
+                    <RotateCcw size={17} />
+                    {current.status === "Refunded" ? "Refunded" : "Refund"}
+                  </Button>
+                  <Button danger onClick={() => setRemove(true)}>
+                    <Trash2 size={17} />
+                    Delete
+                  </Button>
+                </div>
+                <Button
+                  primary
+                  onClick={() =>
+                    printThermal(
+                      <Receipt
+                        sale={current}
+                        settings={state.settings}
+                        showActions={false}
+                      />,
+                      current.id,
+                    )
+                  }
+                >
+                  <Printer size={17} />
+                  Print Receipt
+                </Button>
+              </div>
+            </div>
           )}
         </Modal>
       )}

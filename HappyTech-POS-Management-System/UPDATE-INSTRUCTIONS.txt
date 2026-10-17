@@ -1,0 +1,15 @@
+Happy Tech Store interface update
+
+Extract this ZIP into your project root and overwrite the included files. Do NOT delete src: this is a partial update for the routed version. Restart Vite with npm run dev. No new dependencies are needed.
+
+Changes: removed visible demo labels and example PIN hints; lighter input placeholders; consistent black/white sidebar icons; tablet/mobile expandable sidebar with backdrop, close button, labels, logo and Happy Tech Store name; no automatic printing on sale completion; text-only POS categories using kg/sk; 80 mm thermal print summaries and receipts; clickable transaction rows; receipt-only scrolling and fixed refund/delete/print actions; clickable inventory stock filters; group creation/deletion/reassignment under Product Group > Manage Groups; Settings > Store Information logo upload/remove (PNG/JPEG/WebP, 1 MB).
+
+Sidebar: expand with the top sidebar icon on screens up to 1024px. Tap outside, close, press Escape, or select a page to close.
+
+Group deletion: retain at least one group; move existing products to another group before deletion.
+Transaction deletion: confirms before removing a record; does not adjust stock. Refund restores stock.
+Printing: only manual print buttons open the browser print dialog. Output is 80 mm wide with 4 mm margins and paginated 297 mm sheets; select the matching 80 mm thermal printer/paper in the print dialog.
+
+Your request for an additional Add Group field ended at “asking for the”. No unspecified field was invented; Group Name remains required.
+
+Existing browser data and backup format remain compatible. No backend or authentication changes.

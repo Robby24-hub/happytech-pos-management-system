@@ -1,0 +1,10 @@
+/* SearchField: local styles and responsive overrides. Shared theme/utilities come from index.css. */
+@reference "../../index.css";
+@layer components.ui {
+  .search-field {
+    @apply flex min-h-12.5 min-w-0 flex-1 items-center gap-3 rounded-[13px] border border-line bg-white px-3.5 text-muted;
+  }
+  .search-field input {
+    @apply h-12 w-full bg-transparent outline-none text-[#15213a] placeholder:text-[#a5b2ac];
+  }
+}

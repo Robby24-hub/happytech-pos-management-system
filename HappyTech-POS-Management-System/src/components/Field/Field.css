@@ -1,0 +1,22 @@
+/* Field: local styles and responsive overrides. Shared theme/utilities come from index.css. */
+@reference "../../index.css";
+@layer components.ui {
+  .field {
+    @apply mb-4 flex min-w-0 flex-col gap-2;
+  }
+  .field > span {
+    @apply text-[12px] font-semibold;
+  }
+  .field input,
+  .field select,
+  .field textarea,
+  .readonly-field {
+    @apply min-h-12.5 w-full rounded-[13px] border border-line bg-white px-3.5 py-3;
+  }
+  .readonly-field {
+    @apply text-muted;
+  }
+  .field input:disabled {
+    @apply bg-slate-50;
+  }
+}

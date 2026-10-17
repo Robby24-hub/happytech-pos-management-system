@@ -1,3 +1,4 @@
+import "./Reports.css";
 import { useState } from "react";
 import { Download, Printer, CalendarDays } from "lucide-react";
 import { Card, Stat, Button, Field, Empty } from "../../components/UI";
@@ -145,7 +146,7 @@ export default function Reports({ state }) {
         <Card className="p-5">
           <h2>Sales overview</h2>
           <p className="helper mt-3 mb-3">
-            {period === "Today" ? "Hourly" : "Period"} net sales · demo records
+            {period === "Today" ? "Hourly" : "Period"} net sales
           </p>
           <Chart labels={labels} values={values} max={max} />
           <div className="sales-breakdown">

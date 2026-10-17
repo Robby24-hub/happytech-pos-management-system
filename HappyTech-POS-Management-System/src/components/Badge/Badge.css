@@ -1,0 +1,19 @@
+/* Badge: local styles and responsive overrides. Shared theme/utilities come from index.css. */
+@reference "../../index.css";
+@layer components.ui {
+  .badge {
+    @apply inline-flex items-center rounded-full px-3 py-2 text-[11px] font-medium whitespace-nowrap;
+  }
+  .badge.green {
+    @apply bg-mint text-green-700;
+  }
+  .badge.amber {
+    @apply bg-amber-50 text-amber-700;
+  }
+  .badge.red {
+    @apply bg-red-50 text-red-600;
+  }
+  .badge.gray {
+    @apply bg-slate-100 text-slate-600;
+  }
+}

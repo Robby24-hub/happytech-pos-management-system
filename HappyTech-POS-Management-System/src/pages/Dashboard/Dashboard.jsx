@@ -1,3 +1,4 @@
+import "./Dashboard.css";
 import { useState } from "react";
 import {
   Banknote,
@@ -133,9 +134,6 @@ export default function Dashboard({ state, navigate }) {
             max={20000 * factor}
           />
         </div>
-        <small className="helper">
-          Illustrative performance data · New demo sales update the sales total.
-        </small>
       </Card>
       <Card className="quick-actions">
         <h2>Quick Actions</h2>

@@ -73,7 +73,7 @@ export const seedSales = Array.from({ length: 6 }, (_, i) => {
     total: items.reduce((s, x) => s + x.qty * x.price, 0),
     received: 2000,
     status: "Completed",
-    sync: "Demo local",
+    sync: "Saved",
   };
 });
 export const seedSettings = {

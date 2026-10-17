@@ -1,0 +1,18 @@
+/* Select: local styles and responsive overrides. Shared theme/utilities come from index.css. */
+@reference "../../index.css";
+@layer components.ui {
+  .select-wrap {
+    @apply relative min-w-27.5;
+  }
+  .select-wrap select {
+    @apply h-12 w-full appearance-none rounded-[11px] border border-line bg-white pr-9 pl-4 font-semibold;
+  }
+  .select-wrap svg {
+    @apply pointer-events-none absolute top-4.25 right-3;
+  }
+}
+@media (max-width: 600px) {
+  .select-wrap {
+    flex: 1;
+  }
+}

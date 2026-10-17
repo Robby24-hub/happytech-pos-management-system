@@ -1,5 +1,7 @@
-import { money, dateTime } from "../data/mock";
-import { Button } from "./UI";
+import { printThermal } from "../ThermalPrint/ThermalPrint";
+import "./Receipt.css";
+import { money, dateTime } from "../../data/mock";
+import { Button } from "../UI";
 import { Printer, Download } from "lucide-react";
 export async function exportPDF(title, lines) {
   const { jsPDF } = await import("jspdf");
@@ -38,10 +40,9 @@ export function receiptLines(sale, settings) {
     `Change: ${money(Math.max(0, sale.received - sale.total))}`,
     `Status: ${sale.status}`,
     settings.receiptFooter,
-    "Frontend demonstration - local record only",
   ];
 }
-export default function Receipt({ sale, settings }) {
+export default function Receipt({ sale, settings, showActions = true }) {
   return (
     <>
       <div className="receipt print-area">
@@ -88,20 +89,28 @@ export default function Receipt({ sale, settings }) {
         </div>
         <hr />
         <p>{settings.receiptFooter}</p>
-        <small>DEMO · Local mock transaction</small>
       </div>
-      <div className="flex gap-3 mt-5 no-print">
-        <Button onClick={() => window.print()}>
-          <Printer size={17} />
-          Print Receipt
-        </Button>
-        <Button
-          onClick={() => exportPDF(sale.id, receiptLines(sale, settings))}
-        >
-          <Download size={17} />
-          PDF
-        </Button>
-      </div>
+      {showActions && (
+        <div className="flex gap-3 mt-5 no-print">
+          <Button
+            onClick={() =>
+              printThermal(
+                <Receipt sale={sale} settings={settings} showActions={false} />,
+                sale.id,
+              )
+            }
+          >
+            <Printer size={17} />
+            Print Receipt
+          </Button>
+          <Button
+            onClick={() => exportPDF(sale.id, receiptLines(sale, settings))}
+          >
+            <Download size={17} />
+            PDF
+          </Button>
+        </div>
+      )}
     </>
   );
 }

@@ -1,4 +1,5 @@
-import { money } from "../data/mock";
+import "./Chart.css";
+import { money } from "../../data/mock";
 export default function Chart({ values, labels, max = 20000 }) {
   const W = 850,
     H = 310,

@@ -1,3 +1,6 @@
+/* Shared theme, reset, app layout, tables, helpers, and cross-page print styles. Page and component styles live beside their JSX files. */
+@layer theme, base, components, utilities;
+@layer components.shared, components.ui, components.pages;
 @import "tailwindcss";
 @theme {
   --color-green: #1e9d75;
@@ -71,7 +74,7 @@
     min-width: 0;
   }
 }
-@layer components {
+@layer components.shared {
   .app-shell {
     @apply flex min-h-screen;
   }
@@ -81,70 +84,8 @@
   .main {
     @apply p-6.5;
   }
-  .card {
-    @apply rounded-[14px] border border-line bg-white;
-    box-shadow: 0 4px 3px #10281e30;
-  }
-  .btn {
-    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-[11px] border border-line bg-white px-5 py-3 font-semibold whitespace-nowrap transition-colors hover:bg-mint;
-  }
-  .btn-primary {
-    @apply border-green bg-green text-white hover:bg-[#168663];
-  }
-  .btn-danger {
-    @apply border-red-200 bg-red-50 text-red-700 hover:bg-red-100;
-  }
   .icon-button {
     @apply flex size-12 shrink-0 items-center justify-center rounded-[11px] hover:bg-mint;
-  }
-  .asset-icon {
-    @apply inline-flex shrink-0 items-center justify-center;
-  }
-  .asset-icon img {
-    display: block;
-    max-width: none;
-  }
-  .sidebar {
-    @apply sticky top-0 flex h-screen w-22 shrink-0 flex-col items-center bg-white px-3 py-4.5;
-  }
-  .brand {
-    @apply flex size-12 shrink-0 items-center justify-center rounded-[14px] bg-green text-white;
-  }
-  .sidebar nav {
-    @apply mt-4 flex w-full flex-col gap-4;
-  }
-  .nav-button {
-    @apply flex h-14 w-16 items-center justify-center rounded-[14px] hover:bg-mint;
-  }
-  .nav-button.active {
-    @apply bg-green;
-  }
-  .sidebar-bottom {
-    @apply mt-auto flex flex-col gap-4;
-  }
-  .topbar {
-    @apply flex h-19 items-center gap-5 bg-white px-6.5;
-  }
-  .topbar h1 {
-    @apply shrink-0;
-  }
-  .top-meta {
-    @apply ml-auto flex items-center gap-3;
-  }
-  .top-meta time {
-    @apply text-muted;
-  }
-  .avatar {
-    @apply flex size-9 shrink-0 items-center justify-center rounded-full bg-green font-semibold text-white;
-  }
-  .identity {
-    @apply flex min-w-27.5 flex-col gap-1;
-  }
-  .identity small {
-    @apply text-muted;
-  }
-  .demo-strip {
-    @apply bg-[#f6faf8] px-6.5 py-1 text-[10px] text-muted;
   }
   .notification-button {
     @apply relative;
@@ -154,116 +95,6 @@
   }
   .stats-grid {
     @apply grid grid-cols-4 gap-4;
-  }
-  .stat {
-    @apply flex min-h-27 items-center gap-4 p-4.5;
-  }
-  .stat-icon {
-    @apply flex size-12 shrink-0 items-center justify-center rounded-xl bg-[#09a071] text-white;
-  }
-  .stat-icon.alert {
-    @apply bg-red-50 text-red-500;
-  }
-  .stat-label {
-    @apply text-[11px] text-[#15213a];
-  }
-  .stat-value {
-    @apply mt-1 block text-[25px] leading-tight tracking-tight text-[#15213a];
-  }
-  .stat-caption {
-    @apply mt-1 text-[11px] text-[#5979a5];
-  }
-  .stat-caption b {
-    @apply text-green-700;
-  }
-  .select-wrap {
-    @apply relative min-w-27.5;
-  }
-  .select-wrap select {
-    @apply h-12 w-full appearance-none rounded-[11px] border border-line bg-white pr-9 pl-4 font-semibold;
-  }
-  .select-wrap svg {
-    @apply pointer-events-none absolute top-4.25 right-3;
-  }
-  .search-field {
-    @apply flex min-h-12.5 min-w-0 flex-1 items-center gap-3 rounded-[13px] border border-line bg-white px-3.5 text-muted;
-  }
-  .search-field input {
-    @apply h-12 w-full bg-transparent outline-none text-[#15213a] placeholder:text-muted;
-  }
-  .dashboard {
-    @apply flex min-h-[calc(100dvh-98px)] flex-col gap-4 pt-3.5 pb-3.5;
-  }
-  .overview {
-    @apply flex flex-1 flex-col p-5.5;
-    min-height: 360px;
-  }
-  .overview > div > div > p {
-    font-size: 12px;
-  }
-  .overview .select-wrap select {
-    height: 34px;
-    border-radius: 20px;
-    font-size: 12px;
-  }
-  .overview .select-wrap svg {
-    top: 11px;
-  }
-  .overview-body {
-    @apply flex flex-1 items-center gap-5;
-  }
-  .gauge-block {
-    @apply flex w-52.5 shrink-0 flex-col items-center gap-3 text-center;
-  }
-  .gauge {
-    @apply relative flex size-40 items-center justify-center;
-  }
-  .gauge img {
-    width: 160px;
-    height: 160px;
-    max-width: none;
-  }
-  .gauge > div {
-    @apply absolute inset-0 flex flex-col items-center justify-center;
-  }
-  .gauge strong {
-    @apply text-4xl font-bold;
-  }
-  .gauge small {
-    @apply mt-1;
-  }
-  .sales-chart {
-    @apply block w-full min-w-0;
-  }
-  .overview-body .sales-chart {
-    max-height: 310px;
-  }
-  .quick-actions {
-    @apply px-5 py-4;
-  }
-  .quick-actions h2 {
-    color: #15213a;
-  }
-  .quick-grid {
-    @apply mt-3 grid grid-cols-4 gap-3;
-  }
-  .quick-grid button {
-    @apply flex min-h-19.5 items-center gap-2 rounded-[10px] border border-line bg-[#f6faf8] px-3.5 py-3 text-left hover:bg-mint;
-  }
-  .quick-grid button.primary {
-    @apply bg-[#12854e] text-white;
-  }
-  .quick-grid button span:not(.asset-icon) {
-    @apply flex-1;
-  }
-  .quick-grid strong {
-    @apply block text-[13px] font-semibold;
-  }
-  .quick-grid small {
-    @apply block text-[#5979a5];
-  }
-  .quick-grid .primary small {
-    @apply text-white/80;
   }
   .table-controls {
     @apply flex flex-wrap items-center gap-3 p-4.5;
@@ -289,199 +120,11 @@
   .table-footer {
     @apply border-t border-line px-4.5 py-4 text-[11px] text-muted;
   }
-  .badge {
-    @apply inline-flex items-center rounded-full px-3 py-2 text-[11px] font-medium whitespace-nowrap;
-  }
-  .badge.green {
-    @apply bg-mint text-green-700;
-  }
-  .badge.amber {
-    @apply bg-amber-50 text-amber-700;
-  }
-  .badge.red {
-    @apply bg-red-50 text-red-600;
-  }
-  .badge.gray {
-    @apply bg-slate-100 text-slate-600;
-  }
-  .product-name {
-    @apply flex min-h-12 items-center gap-3 text-left;
-  }
-  .inventory-art {
-    @apply flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-mint;
-  }
-  .toggle {
-    @apply flex h-6.5 w-10.5 shrink-0 items-center rounded-full bg-slate-300 px-1;
-  }
-  .toggle span {
-    @apply size-4.5 rounded-full bg-white;
-  }
-  .toggle.on {
-    @apply justify-end bg-green;
-  }
-  .inventory > .stats-grid {
-    @apply mb-4;
-  }
-  .inventory .stat {
-    min-height: 120px;
-  }
-  .inventory td {
-    height: 74px;
-  }
-  .inventory table {
-    min-width: 1000px;
-  }
-  .sales-history {
-    padding-top: 26px;
-  }
-  .sales-history td {
-    height: 67px;
-  }
-  .sales-history table {
-    min-width: 850px;
-  }
-  .sales-history .select-wrap {
-    min-width: 200px;
-  }
-  .pos-layout {
-    display: grid;
-    grid-template-columns: 180px minmax(0, 1fr) 360px;
-    height: calc(100dvh - 98px);
-    min-height: 560px;
-  }
-  .pos-categories {
-    @apply flex flex-col gap-2.5 bg-white px-2.5 py-4;
-  }
-  .pos-categories > button {
-    @apply flex min-h-19 flex-col items-center justify-center gap-2.5 rounded-[14px] border border-line bg-white p-3 text-center text-[12px] font-semibold;
-  }
-  .pos-categories > button.active {
-    @apply border-green bg-green text-white;
-  }
-  .pos-categories > button.active img {
-    filter: brightness(0) invert(1);
-  }
-  .product-browser {
-    @apply overflow-y-auto p-5;
-  }
-  .product-browser > .search-field {
-    @apply mb-4;
-    box-shadow: 0 4px 3px #10281e30;
-  }
-  .products-grid {
-    @apply grid grid-cols-4 gap-3.5;
-  }
-  .product-card {
-    @apply flex min-w-0 flex-col gap-1.75 rounded-[14px] border border-line bg-white p-3 text-left;
-    box-shadow: 0 4px 3px #10281e30;
-  }
-  .product-card:hover {
-    @apply border-green;
-  }
-  .product-art {
-    @apply mb-0 flex h-22.5 w-full items-center justify-center rounded-xl bg-mint;
-  }
-  .product-card strong {
-    @apply text-[13px] leading-snug;
-  }
-  .product-card b {
-    @apply text-base text-[#00a376];
-  }
-  .product-card small {
-    @apply text-[10px] text-muted;
-  }
-  .product-card.out {
-    @apply bg-white/80;
-  }
-  .cart-panel {
-    @apply flex min-h-0 flex-col bg-white px-6 py-5;
-  }
-  .cart-items {
-    @apply flex-1 overflow-y-auto;
-  }
-  .cart-item {
-    @apply border-b border-line py-4;
-  }
-  .cart-item small {
-    @apply text-muted;
-  }
-  .quantity-control {
-    @apply flex items-center overflow-hidden rounded-lg border border-line;
-  }
-  .quantity-control button {
-    @apply flex size-10 items-center justify-center hover:bg-mint;
-  }
-  .quantity-control input {
-    @apply h-10 w-12 text-center;
-  }
-  .cart-footer {
-    @apply border-t border-line pt-5;
-  }
-  .checkout-layout {
-    @apply grid grid-cols-2 items-start gap-6 max-w-275 mx-auto;
-  }
-  .checkout-row {
-    @apply flex items-center justify-between gap-4 border-b border-line py-5;
-  }
-  .checkout-row small {
-    @apply mt-1 block text-muted;
-  }
-  .gcash-panel {
-    @apply flex flex-col items-center gap-3 rounded-xl bg-mint p-5;
-  }
-  .gcash-panel > img {
-    @apply max-h-60 max-w-full object-contain;
-  }
-  .qr-placeholder {
-    @apply flex min-h-36 flex-col items-center justify-center gap-5 text-center text-muted;
-  }
   .checkbox-row {
     @apply my-4 flex items-center gap-3;
   }
   .checkbox-row input {
     @apply size-5 accent-green;
-  }
-  .modal-overlay {
-    @apply fixed inset-0 z-50 flex items-center justify-center bg-[#10251d66] p-5;
-  }
-  .modal {
-    @apply max-h-[92dvh] w-full max-w-130 overflow-y-auto rounded-[18px] border border-line bg-white shadow-2xl;
-  }
-  .modal.wide {
-    max-width: 800px;
-  }
-  .modal-header {
-    @apply sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-line bg-white px-6 py-3;
-  }
-  .modal-content {
-    @apply p-6;
-  }
-  .modal-actions {
-    @apply mt-6 flex justify-end gap-3 border-t border-line pt-5;
-  }
-  .drawer-overlay {
-    @apply justify-end p-0;
-  }
-  .modal.drawer {
-    @apply h-dvh max-h-dvh max-w-120 rounded-none;
-  }
-  .field {
-    @apply mb-4 flex min-w-0 flex-col gap-2;
-  }
-  .field > span {
-    @apply text-[12px] font-semibold;
-  }
-  .field input,
-  .field select,
-  .field textarea,
-  .readonly-field {
-    @apply min-h-12.5 w-full rounded-[13px] border border-line bg-white px-3.5 py-3;
-  }
-  .readonly-field {
-    @apply text-muted;
-  }
-  .field input:disabled {
-    @apply bg-slate-50;
   }
   .helper {
     @apply text-[12px] leading-relaxed text-muted;
@@ -489,365 +132,27 @@
   .error {
     @apply my-3 text-[12px] text-red-600;
   }
-  .empty {
-    @apply p-10 text-center text-muted;
-  }
-  .toast {
-    @apply fixed bottom-6 left-1/2 z-70 flex -translate-x-1/2 items-center gap-3 rounded-xl border border-[#c3e8d7] bg-white px-6 py-4 font-semibold text-green-700 shadow-xl;
-  }
   .text-button {
     @apply flex min-h-10 items-center justify-center gap-2 font-semibold text-green-700;
   }
   .notification-row {
     @apply border-b border-line py-4;
   }
-  .details-product {
-    @apply flex flex-col items-center gap-4 py-4;
-  }
-  .details-list {
-    @apply mt-5 grid grid-cols-2 gap-5;
-  }
-  .details-list dt {
-    @apply text-muted;
-  }
-  .details-list dd {
-    @apply text-right font-semibold break-all;
-  }
-  .period-controls {
-    @apply flex flex-wrap items-end gap-2 p-3.5;
-  }
-  .period-controls .field {
-    margin: 0;
-  }
-  .period-controls .field input {
-    min-height: 48px;
-  }
   .eyebrow {
     @apply mb-1 text-[10px] font-bold text-green-700;
-  }
-  .reports-grid {
-    @apply grid grid-cols-[1.8fr_1fr] items-stretch gap-4;
-  }
-  .reports .stat {
-    min-height: 120px;
-  }
-  .reports .stat-value {
-    color: black;
-  }
-  .sales-breakdown {
-    @apply mt-4 grid grid-cols-3 gap-4 border-t border-line pt-4;
-  }
-  .sales-breakdown small {
-    @apply block text-muted;
-  }
-  .sales-breakdown b {
-    @apply mt-2 block text-lg;
-  }
-  .sales-breakdown > div:last-child b {
-    @apply text-green-700;
-  }
-  .payment-track {
-    @apply h-3 overflow-hidden rounded-r-full bg-mint;
-  }
-  .payment-track span {
-    @apply block h-full bg-green;
-  }
-  .payment-row {
-    @apply my-4 border-b border-line py-4;
-  }
-  .reports .sales-chart {
-    min-height: 230px;
-  }
-  .settings-layout {
-    display: grid;
-    grid-template-columns: 248px minmax(0, 1fr);
-    min-height: calc(100dvh - 98px);
-  }
-  .settings-nav {
-    @apply flex flex-col bg-white px-3.5 py-6;
-  }
-  .settings-nav nav {
-    @apply flex flex-col gap-2;
-  }
-  .settings-nav nav > button {
-    @apply flex min-h-13 items-center gap-3 rounded-xl px-3 py-3 text-left text-[12px] font-semibold;
-  }
-  .settings-nav nav > button.active {
-    @apply bg-green text-white;
-  }
-  .settings-nav nav > button.active img {
-    filter: brightness(0) invert(1);
-  }
-  .settings-nav > .btn {
-    margin-top: auto;
-  }
-  .settings-main {
-    @apply p-7.5;
-  }
-  .settings-heading {
-    @apply mb-6 flex items-center gap-4;
-  }
-  .settings-heading h2 {
-    @apply text-2xl;
-  }
-  .section-icon {
-    @apply flex size-13 shrink-0 items-center justify-center rounded-[13px] bg-green;
-  }
-  .section-icon img {
-    filter: brightness(0) invert(1);
-  }
-  .settings-fields .field:last-child {
-    max-width: 450px;
-  }
-  .settings-footer {
-    @apply mt-5 flex justify-end border-t border-line pt-5;
-  }
-  .settings-qr {
-    @apply my-4 max-h-52 max-w-full object-contain;
-  }
-  .receipt {
-    @apply mx-auto max-w-85 bg-white p-3 text-[12px];
-    font-family: "Courier New", monospace;
-  }
-  .receipt h2,
-  .receipt > p,
-  .receipt > small {
-    @apply block text-center;
-  }
-  .receipt > p {
-    @apply my-3 leading-relaxed;
-  }
-  .receipt hr {
-    @apply my-4 border-dashed;
-  }
-  .receipt-item {
-    @apply my-3 flex justify-between gap-3;
-  }
-  .receipt-item small {
-    @apply block;
-  }
-  .receipt-item b {
-    @apply shrink-0;
-  }
-  .login-screen {
-    @apply grid min-h-dvh grid-cols-[44%_56%] bg-[#f6faf8];
-  }
-  .login-brand {
-    @apply relative flex min-h-dvh flex-col justify-between overflow-hidden p-12 text-white;
-    background: linear-gradient(160deg, #0f1b33 0%, #12403a 55%, #0c825a 100%);
-  }
-  .login-brand:before {
-    content: "";
-    position: absolute;
-    width: 420px;
-    height: 420px;
-    top: -140px;
-    left: -140px;
-    border-radius: 50%;
-    background: #0a9f681a;
-    pointer-events: none;
-  }
-  .login-hero {
-    @apply relative py-10 text-center;
-  }
-  .login-hero img {
-    @apply mx-auto mb-6 h-55 w-80 max-w-full object-contain;
-  }
-  .login-hero h2 {
-    @apply mb-2 text-xl;
-  }
-  .login-hero > p {
-    @apply leading-relaxed text-white/80;
-  }
-  .login-tip {
-    @apply flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/10 px-5 py-4;
-  }
-  .login-tip p {
-    @apply text-white/80 text-[12px];
-  }
-  .login-main {
-    @apply relative flex min-h-dvh items-center justify-center px-10 py-14;
-  }
-  .login-card {
-    @apply w-full max-w-130 rounded-[28px] border border-[#d7e1ea] bg-white p-10 text-[#15213a];
-    box-shadow: 0 18px 30px #15213a12;
-  }
-  .login-card h1 {
-    @apply mb-2 text-center;
-  }
-  .role-choice {
-    @apply flex min-h-25 items-center gap-5 rounded-2xl border border-[#d7e1ea] p-5 text-left hover:border-green hover:bg-mint;
-  }
-  .role-choice > span:nth-child(2) {
-    @apply flex-1;
-  }
-  .role-choice strong {
-    @apply text-lg;
-  }
-  .role-choice small {
-    @apply mt-1 block leading-relaxed text-[#5979a5];
-  }
-  .role-symbol {
-    @apply flex size-14 shrink-0 items-center justify-center rounded-xl bg-[#f6faf8] text-[#5979a5];
-  }
-  .role-radio {
-    @apply size-6 shrink-0 rounded-full border border-[#d7e1ea];
-  }
-  .login-footer {
-    @apply absolute bottom-5 left-4 right-4 text-center text-[12px] text-[#5979a5];
-  }
-  .login-card form {
-    @apply mt-5;
-  }
-  .pin-input {
-    @apply h-14 w-full rounded-xl border border-line text-center text-3xl tracking-[18px];
-  }
-  .keypad {
-    @apply mt-4 grid grid-cols-3 gap-2;
-  }
-  .keypad button {
-    @apply flex h-12 items-center justify-center rounded-lg border border-line bg-[#f6faf8] text-xl font-semibold hover:bg-mint;
-  }
-}
-@media (min-width: 1500px) {
-  .pos-layout {
-    grid-template-columns: 180px minmax(0, 1fr) 400px;
-  }
-  .products-grid {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-  }
-  .overview-body .sales-chart {
-    max-height: 400px;
   }
 }
 @media (max-width: 1100px) {
   .stats-grid {
     gap: 12px;
   }
-  .stat {
-    gap: 10px;
-    padding: 14px;
-  }
-  .stat-value {
-    font-size: 22px;
-  }
-  .stat-icon {
-    width: 44px;
-    height: 44px;
-  }
   .main {
     padding: 20px;
-  }
-  .pos-layout {
-    grid-template-columns: 145px minmax(0, 1fr) 310px;
-  }
-  .products-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-  .cart-panel {
-    padding: 18px;
-  }
-  .quick-grid button {
-    padding: 10px;
-  }
-  .top-meta time {
-    font-size: 11px;
-  }
-  .settings-layout {
-    grid-template-columns: 220px minmax(0, 1fr);
-  }
-  .settings-main {
-    padding: 24px;
-  }
-  .login-brand {
-    padding: 30px;
-  }
-  .login-main {
-    padding: 40px 25px;
-  }
-  .login-card {
-    padding: 28px;
-  }
-  .topbar {
-    gap: 14px;
   }
 }
 @media (max-width: 800px) {
   .stats-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .quick-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .sidebar {
-    width: 72px;
-    padding: 14px 6px;
-  }
-  .nav-button {
-    width: 56px;
-  }
-  .sidebar nav {
-    gap: 8px;
-  }
-  .top-meta time {
-    display: none;
-  }
-  .topbar {
-    padding: 0 16px;
-    gap: 10px;
-  }
-  .topbar h1 {
-    font-size: 21px;
-  }
-  .identity {
-    min-width: 0;
-  }
-  .overview-body {
-    gap: 0;
-  }
-  .gauge-block {
-    width: 180px;
-  }
-  .reports-grid {
-    grid-template-columns: 1fr;
-  }
-  .pos-layout {
-    grid-template-columns: 112px minmax(0, 1fr) 280px;
-  }
-  .product-browser {
-    padding: 14px;
-  }
-  .products-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-  }
-  .pos-categories {
-    padding: 12px 8px;
-  }
-  .pos-categories > button {
-    font-size: 11px;
-  }
-  .settings-layout {
-    grid-template-columns: 190px minmax(0, 1fr);
-  }
-  .settings-main {
-    padding: 20px;
-  }
-  .settings-nav nav > button {
-    font-size: 11px;
-    padding: 10px 6px;
-  }
-  .login-screen {
-    grid-template-columns: 1fr;
-  }
-  .login-brand {
-    display: none;
-  }
-  .login-card {
-    max-width: 480px;
-  }
-  .checkout-layout {
-    grid-template-columns: 1fr;
   }
   .notification-button {
     width: 35px;
@@ -855,158 +160,10 @@
 }
 @media (max-width: 600px) {
   .app-shell {
-    padding-bottom: 72px;
-  }
-  .sidebar {
-    position: fixed;
-    top: auto;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
-    height: 68px;
-    z-index: 30;
-    flex-direction: row;
-    padding: 6px;
-    box-shadow: 0 -2px 8px #0001;
-  }
-  .sidebar .brand,
-  .sidebar-bottom {
-    display: none;
-  }
-  .sidebar nav {
-    margin: 0;
-    flex-direction: row;
-    justify-content: space-around;
-    gap: 0;
-  }
-  .nav-button {
-    width: 42px;
-    height: 48px;
-  }
-  .sidebar nav .nav-button:nth-child(n + 7) {
-    display: none;
+    padding-bottom: 0;
   }
   .main {
     padding: 14px;
-  }
-  .stat-value {
-    font-size: 21px;
-  }
-  .stat {
-    padding: 12px;
-    gap: 9px;
-    min-height: 98px;
-  }
-  .stat-label {
-    font-size: 9px;
-  }
-  .stat-caption {
-    font-size: 10px;
-  }
-  .stat-icon {
-    width: 36px;
-    height: 42px;
-  }
-  .identity {
-    display: none;
-  }
-  .topbar h1 {
-    font-size: 20px;
-  }
-  .topbar {
-    height: 66px;
-  }
-  .demo-strip {
-    padding: 4px 14px;
-  }
-  .overview {
-    padding: 16px;
-  }
-  .overview-body {
-    flex-direction: column;
-  }
-  .gauge-block {
-    width: auto;
-    padding: 15px;
-  }
-  .overview .sales-chart {
-    min-height: 190px;
-  }
-  .quick-grid {
-    gap: 8px;
-  }
-  .quick-grid button {
-    gap: 5px;
-  }
-  .quick-grid strong {
-    font-size: 12px;
-  }
-  .pos-layout {
-    height: auto;
-    min-height: 0;
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .pos-categories {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    flex-direction: row;
-    overflow: auto;
-    padding: 8px;
-  }
-  .pos-categories > button {
-    min-width: 100px;
-    min-height: 55px;
-    gap: 4px;
-  }
-  .pos-categories .asset-icon {
-    display: none;
-  }
-  .products-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .product-art {
-    height: 70px;
-  }
-  .cart-panel {
-    min-height: 320px;
-    margin-top: 10px;
-  }
-  .cart-items {
-    max-height: 400px;
-  }
-  .cart-footer {
-    margin-top: 20px;
-  }
-  .settings-layout {
-    grid-template-columns: 1fr;
-  }
-  .settings-nav {
-    padding: 10px;
-  }
-  .settings-nav > p {
-    display: none;
-  }
-  .settings-nav nav {
-    flex-direction: row;
-    overflow: auto;
-    gap: 4px;
-  }
-  .settings-nav nav > button {
-    min-width: 145px;
-  }
-  .settings-nav > .btn {
-    margin-top: 10px;
-  }
-  .settings-main {
-    padding: 16px;
-  }
-  .settings-heading h2 {
-    font-size: 21px;
-  }
-  .reports > .flex {
-    flex-direction: column;
   }
   .table-controls {
     padding: 12px;
@@ -1015,47 +172,6 @@
   .table-controls > .search-field {
     flex-basis: 100%;
   }
-  .select-wrap {
-    flex: 1;
-  }
-  .sales-history .select-wrap {
-    min-width: 120px;
-  }
-  .toast {
-    width: calc(100% - 24px);
-    bottom: 80px;
-    font-size: 12px;
-    padding: 14px;
-  }
-  .modal-overlay {
-    padding: 10px;
-  }
-  .modal-content {
-    padding: 20px;
-  }
-  .modal-actions {
-    flex-wrap: wrap;
-  }
-  .login-main {
-    padding: 35px 16px 65px;
-  }
-  .login-card {
-    padding: 25px;
-  }
-  .login-card h1 {
-    font-size: 24px;
-  }
-  .role-choice {
-    padding: 16px;
-    gap: 12px;
-  }
-  .role-symbol {
-    width: 40px;
-    height: 44px;
-  }
-  .role-choice strong {
-    font-size: 16px;
-  }
 }
 @media print {
   body {
@@ -1063,7 +179,6 @@
   }
   .no-print,
   .topbar,
-  .demo-strip,
   .sidebar,
   .toast,
   .modal-header,
@@ -1075,26 +190,6 @@
   .main {
     display: block !important;
     padding: 0 !important;
-  }
-  .card {
-    box-shadow: none !important;
-  }
-  .modal-overlay {
-    position: static !important;
-    background: white !important;
-    display: block !important;
-    padding: 0 !important;
-  }
-  .modal {
-    max-height: none !important;
-    max-width: none !important;
-    width: 100% !important;
-    overflow: visible !important;
-    border: 0 !important;
-    box-shadow: none !important;
-  }
-  .modal-overlay ~ * {
-    display: none;
   }
   .app-shell:has(.modal-overlay) > .page-shell,
   .app-shell:has(.modal-overlay) > .sidebar {
@@ -1114,38 +209,31 @@
     font-size: 9px !important;
     padding: 8px !important;
   }
-  .reports-grid {
-    display: block;
-  }
-  .reports .card {
-    break-inside: avoid;
-    margin-bottom: 15px;
-  }
-  .receipt {
-    max-width: 80mm;
-  }
   .receipt button,
   .modal-content > .btn {
     display: none !important;
   }
 }
 
-@media (min-width: 801px) {
-  .dashboard {
-    height: calc(100dvh - 98px);
-    min-height: 660px;
+@layer base {
+  :root {
+    --header-height: 76px;
   }
-  .overview {
-    min-height: 0;
+  input::placeholder,
+  textarea::placeholder {
+    color: #a5b2ac;
+    opacity: 1;
   }
-  .overview-body {
-    min-height: 0;
+}
+@media (max-width: 600px) {
+  :root {
+    --header-height: 66px;
   }
-  .overview-body .sales-chart {
-    height: 100%;
-    max-height: 280px;
-  }
-  .quick-actions {
-    flex-shrink: 0;
+}
+@layer components.shared {
+  .storage-warning {
+    padding: 8px 20px;
+    background: #fff7ed;
+    color: #9a3412;
   }
 }

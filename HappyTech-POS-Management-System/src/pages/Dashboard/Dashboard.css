@@ -1,0 +1,140 @@
+/* Dashboard: local styles and responsive overrides. Shared theme/utilities come from index.css. */
+@reference "../../index.css";
+@layer components.pages {
+  .dashboard {
+    @apply flex min-h-[calc(100dvh-var(--header-height))] flex-col gap-4 pt-3.5 pb-3.5;
+  }
+  .overview {
+    @apply flex flex-1 flex-col p-5.5;
+    min-height: 360px;
+  }
+  .overview > div > div > p {
+    font-size: 12px;
+  }
+  .overview .select-wrap select {
+    height: 34px;
+    border-radius: 20px;
+    font-size: 12px;
+  }
+  .overview .select-wrap svg {
+    top: 11px;
+  }
+  .overview-body {
+    @apply flex flex-1 items-center gap-5;
+  }
+  .gauge-block {
+    @apply flex w-52.5 shrink-0 flex-col items-center gap-3 text-center;
+  }
+  .gauge {
+    @apply relative flex size-40 items-center justify-center;
+  }
+  .gauge img {
+    width: 160px;
+    height: 160px;
+    max-width: none;
+  }
+  .gauge > div {
+    @apply absolute inset-0 flex flex-col items-center justify-center;
+  }
+  .gauge strong {
+    @apply text-4xl font-bold;
+  }
+  .gauge small {
+    @apply mt-1;
+  }
+  .overview-body .sales-chart {
+    max-height: 310px;
+  }
+  .quick-actions {
+    @apply px-5 py-4;
+  }
+  .quick-actions h2 {
+    color: #15213a;
+  }
+  .quick-grid {
+    @apply mt-3 grid grid-cols-4 gap-3;
+  }
+  .quick-grid button {
+    @apply flex min-h-19.5 items-center gap-2 rounded-[10px] border border-line bg-[#f6faf8] px-3.5 py-3 text-left hover:bg-mint;
+  }
+  .quick-grid button.primary {
+    @apply bg-[#12854e] text-white;
+  }
+  .quick-grid button span:not(.asset-icon) {
+    @apply flex-1;
+  }
+  .quick-grid strong {
+    @apply block text-[13px] font-semibold;
+  }
+  .quick-grid small {
+    @apply block text-[#5979a5];
+  }
+  .quick-grid .primary small {
+    @apply text-white/80;
+  }
+}
+@media (min-width: 1500px) {
+  .overview-body .sales-chart {
+    max-height: 400px;
+  }
+}
+@media (max-width: 1100px) {
+  .quick-grid button {
+    padding: 10px;
+  }
+}
+@media (max-width: 800px) {
+  .quick-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .overview-body {
+    gap: 0;
+  }
+  .gauge-block {
+    width: 180px;
+  }
+}
+@media (max-width: 600px) {
+  .overview {
+    padding: 16px;
+  }
+  .overview-body {
+    flex-direction: column;
+  }
+  .gauge-block {
+    width: auto;
+    padding: 15px;
+  }
+  .overview .sales-chart {
+    min-height: 190px;
+  }
+  .quick-grid {
+    gap: 8px;
+  }
+  .quick-grid button {
+    gap: 5px;
+  }
+  .quick-grid strong {
+    font-size: 12px;
+  }
+}
+
+@media (min-width: 801px) {
+  .dashboard {
+    height: calc(100dvh - var(--header-height));
+    min-height: 660px;
+  }
+  .overview {
+    min-height: 0;
+  }
+  .overview-body {
+    min-height: 0;
+  }
+  .overview-body .sales-chart {
+    height: 100%;
+    max-height: 280px;
+  }
+  .quick-actions {
+    flex-shrink: 0;
+  }
+}

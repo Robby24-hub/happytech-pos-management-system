@@ -1,0 +1,15 @@
+/* Toast: local styles and responsive overrides. Shared theme/utilities come from index.css. */
+@reference "../../index.css";
+@layer components.ui {
+  .toast {
+    @apply fixed bottom-6 left-1/2 z-70 flex -translate-x-1/2 items-center gap-3 rounded-xl border border-[#c3e8d7] bg-white px-6 py-4 font-semibold text-green-700 shadow-xl;
+  }
+}
+@media (max-width: 600px) {
+  .toast {
+    width: calc(100% - 24px);
+    bottom: 80px;
+    font-size: 12px;
+    padding: 14px;
+  }
+}

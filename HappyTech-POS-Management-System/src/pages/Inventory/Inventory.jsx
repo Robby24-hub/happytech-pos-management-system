@@ -1,3 +1,4 @@
+import "./Inventory.css";
 import { useState } from "react";
 import {
   Plus,
@@ -53,6 +54,7 @@ export default function Inventory({ state, update, notify }) {
     [qty, setQty] = useState(""),
     [pool, setPool] = useState("retail"),
     [newGroup, setNewGroup] = useState(""),
+    [replacementGroup, setReplacementGroup] = useState(""),
     [error, setError] = useState("");
   const products = state.products
     .filter(
@@ -79,7 +81,16 @@ export default function Inventory({ state, update, notify }) {
     setModal({ type, p });
     setError("");
     setQty("");
-    setForm(p ? { ...p } : { ...blank });
+    setForm(
+      p
+        ? { ...p }
+        : {
+            ...blank,
+            group: state.groups.includes(blank.group)
+              ? blank.group
+              : state.groups[0],
+          },
+    );
   };
   const save = (e) => {
     e.preventDefault();
@@ -131,6 +142,14 @@ export default function Inventory({ state, update, notify }) {
     <main className="main inventory">
       <div className="stats-grid">
         <Stat
+          onClick={() => {
+            setSearch("");
+            setGroup("All Products");
+            setStatus("All Status");
+          }}
+          active={
+            status === "All Status" && group === "All Products" && !search
+          }
           label="Total Products"
           value={state.products.length}
           caption="Across all groups"
@@ -150,6 +169,12 @@ export default function Inventory({ state, update, notify }) {
           icon="imgBanknote"
         />
         <Stat
+          onClick={() => {
+            setSearch("");
+            setGroup("All Products");
+            setStatus("Low Stock");
+          }}
+          active={status === "Low Stock"}
           label="Low Stock"
           value={
             state.products.filter(
@@ -162,6 +187,12 @@ export default function Inventory({ state, update, notify }) {
           alert
         />
         <Stat
+          onClick={() => {
+            setSearch("");
+            setGroup("All Products");
+            setStatus("Out of Stock");
+          }}
+          active={status === "Out of Stock"}
           label="Out of Stock"
           value={state.products.filter((p) => p.stock === 0).length}
           caption="Zero retail stock"
@@ -176,11 +207,18 @@ export default function Inventory({ state, update, notify }) {
           <Select
             value={group}
             label="Product group"
-            onChange={(v) => (v === "add" ? open("group") : setGroup(v))}
+            onChange={(v) =>
+              v === "add"
+                ? open("group")
+                : v === "manage"
+                  ? open("groups")
+                  : setGroup(v)
+            }
             options={[
               "All Products",
               ...state.groups,
               { value: "add", label: "+ Add Group" },
+              { value: "manage", label: "Manage Groups" },
             ]}
           />
           <Select
@@ -304,12 +342,111 @@ export default function Inventory({ state, update, notify }) {
               restock: "Restock Product",
               delete: "Delete Product",
               group: "Add Product Group",
+              groups: "Manage Product Groups",
+              deleteGroup: "Delete Product Group",
             }[modal.type]
           }
           drawer={modal.type === "details"}
           onClose={() => setModal(null)}
         >
-          {["add", "edit"].includes(modal.type) ? (
+          {modal.type === "groups" ? (
+            <div>
+              <p className="helper mb-4">
+                Manage product groups here. Products can be reassigned before a
+                group is deleted.
+              </p>
+              {state.groups.map((g) => (
+                <div key={g} className="group-management-row">
+                  <div>
+                    <strong>{g}</strong>
+                    <small>
+                      {state.products.filter((p) => p.group === g).length}{" "}
+                      products
+                    </small>
+                  </div>
+                  <Button
+                    danger
+                    disabled={state.groups.length === 1}
+                    onClick={() => {
+                      setReplacementGroup(
+                        state.groups.find((x) => x !== g) || "",
+                      );
+                      open("deleteGroup", g);
+                    }}
+                  >
+                    Delete
+                  </Button>
+                </div>
+              ))}
+              {state.groups.length === 1 && (
+                <p className="helper mt-4">Keep at least one product group.</p>
+              )}
+              <Button primary className="mt-4" onClick={() => open("group")}>
+                <Plus size={18} />
+                Add Group
+              </Button>
+            </div>
+          ) : modal.type === "deleteGroup" ? (
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const assigned = state.products.some(
+                  (p) => p.group === modal.p,
+                );
+                if (
+                  state.groups.length <= 1 ||
+                  (assigned &&
+                    (!replacementGroup ||
+                      replacementGroup === modal.p ||
+                      !state.groups.includes(replacementGroup)))
+                ) {
+                  setError("Choose a valid replacement group.");
+                  return;
+                }
+                update(
+                  (s) => ({
+                    ...s,
+                    groups: s.groups.filter((g) => g !== modal.p),
+                    products: s.products.map((p) =>
+                      p.group === modal.p
+                        ? { ...p, group: replacementGroup }
+                        : p,
+                    ),
+                  }),
+                  `Deleted product group ${modal.p}${assigned ? `; reassigned products to ${replacementGroup}` : ""}`,
+                );
+                if (group === modal.p) setGroup("All Products");
+                setModal(null);
+                notify("Product group deleted");
+              }}
+            >
+              <p className="mb-4">
+                Delete <strong>{modal.p}</strong>?
+              </p>
+              {state.products.some((p) => p.group === modal.p) && (
+                <Field label="Move existing products to">
+                  <select
+                    required
+                    value={replacementGroup}
+                    onChange={(e) => setReplacementGroup(e.target.value)}
+                  >
+                    {state.groups
+                      .filter((g) => g !== modal.p)
+                      .map((g) => (
+                        <option key={g}>{g}</option>
+                      ))}
+                  </select>
+                </Field>
+              )}
+              {error && <p className="error">{error}</p>}
+              <div className="modal-actions">
+                <Button type="button" onClick={() => open("groups")}>
+                  Cancel
+                </Button>
+                <Button danger>Delete Group</Button>
+              </div>
+            </form>
+          ) : ["add", "edit"].includes(modal.type) ? (
             <form onSubmit={save}>
               <Field
                 label="Product Name"
@@ -497,6 +634,7 @@ export default function Inventory({ state, update, notify }) {
                 const g = newGroup.trim();
                 if (
                   !g ||
+                  ["all products", "add", "manage"].includes(g.toLowerCase()) ||
                   state.groups.some((x) => x.toLowerCase() === g.toLowerCase())
                 ) {
                   setError("Enter a unique group name.");

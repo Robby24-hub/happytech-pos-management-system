@@ -1,12 +1,6 @@
+import "./POS.css";
 import { useState } from "react";
-import {
-  Trash2,
-  Minus,
-  Plus,
-  ArrowLeft,
-  Banknote,
-  CheckCircle,
-} from "lucide-react";
+import { Trash2, Minus, Plus, ArrowLeft } from "lucide-react";
 import {
   Button,
   Card,
@@ -17,8 +11,7 @@ import {
   Empty,
 } from "../../components/UI";
 import { money } from "../../data/mock";
-import Receipt from "../../components/Receipt";
-export default function POS({ state, update, user, notify, navigate }) {
+export default function POS({ state, update, user, notify }) {
   const [search, setSearch] = useState(""),
     [category, setCategory] = useState("All Products"),
     [cart, setCart] = useState([]),
@@ -29,8 +22,7 @@ export default function POS({ state, update, user, notify, navigate }) {
     [verified, setVerified] = useState(false),
     [pin, setPin] = useState(""),
     [error, setError] = useState(""),
-    [transferQty, setTransferQty] = useState(1),
-    [receipt, setReceipt] = useState(null);
+    [transferQty, setTransferQty] = useState(1);
   const options = state.products
     .filter((p) => p.available)
     .flatMap((p) => [
@@ -51,8 +43,8 @@ export default function POS({ state, update, user, notify, navigate }) {
     .filter(
       (p) =>
         (category === "All Products" ||
-          (category === "Rice (By Kilo)" && p.saleUnit === "kg") ||
-          (category === "Rice (By Sack)" && p.saleUnit === "sack")) &&
+          (category === "Rice (By kg)" && p.saleUnit === "kg") ||
+          (category === "Rice (By sk)" && p.saleUnit === "sack")) &&
         p.name.toLowerCase().includes(search.toLowerCase()),
     );
   options.sort((a, b) => (a.saleUnit === "sack") - (b.saleUnit === "sack"));
@@ -113,7 +105,7 @@ export default function POS({ state, update, user, notify, navigate }) {
         (u) => u.role !== "Cashier" && u.active && u.pin === pin,
       )
     ) {
-      setError("Incorrect owner PIN. Demo owner PIN: 1234.");
+      setError("Incorrect owner PIN.");
       return;
     }
     if (transferQty <= 0 || transferQty > p.wholesale) {
@@ -165,7 +157,7 @@ export default function POS({ state, update, user, notify, navigate }) {
       total,
       received: payment === "Cash" ? Number(received) : total,
       status: "Completed",
-      sync: "Demo local",
+      sync: "Saved",
     };
     update(
       (s) => ({
@@ -180,53 +172,38 @@ export default function POS({ state, update, user, notify, navigate }) {
     );
     setCart([]);
     setCheckout(false);
-    setReceipt(sale);
     setReceived("");
     setVerified(false);
-    notify("Sale complete · saved locally as demo data");
+    notify("Sale completed");
   };
-  if (receipt)
-    return (
-      <main className="main max-w-2xl mx-auto">
-        <Button className="mb-4" onClick={() => setReceipt(null)}>
-          <ArrowLeft size={17} />
-          New Sale
-        </Button>
-        <Card className="p-6">
-          <div className="flex items-center gap-2 text-green-700 mb-4">
-            <CheckCircle />
-            Sale Complete
-          </div>
-          <Receipt sale={receipt} settings={state.settings} />
-        </Card>
-      </main>
-    );
   if (checkout)
     return (
       <main className="main checkout-layout">
-        <Card className="p-6">
-          <Button onClick={() => setCheckout(false)}>
+        <Card className="checkout-summary">
+          <Button className="self-start" onClick={() => setCheckout(false)}>
             <ArrowLeft size={17} />
             Back to cart
           </Button>
           <h2 className="mt-6 mb-4">Order Summary</h2>
-          {cart.map((i) => (
-            <div key={i.key} className="checkout-row">
-              <div>
-                <strong>{i.name}</strong>
-                <small>
-                  {i.qty} {i.unit} × {money(i.price)}
-                </small>
+          <div className="checkout-order-list">
+            {cart.map((i) => (
+              <div key={i.key} className="checkout-row">
+                <div>
+                  <strong>{i.name}</strong>
+                  <small>
+                    {i.qty} {i.unit} × {money(i.price)}
+                  </small>
+                </div>
+                <b>{money(i.qty * i.price)}</b>
               </div>
-              <b>{money(i.qty * i.price)}</b>
-            </div>
-          ))}
-          <div className="flex justify-between text-2xl font-bold mt-6">
+            ))}
+          </div>
+          <div className="checkout-total">
             <span>Total</span>
             {money(total)}
           </div>
         </Card>
-        <Card className="p-6">
+        <Card className="checkout-payment">
           <h2>Payment</h2>
           <p className="helper mt-1 mb-6">
             Choose a payment method to complete the sale.
@@ -297,7 +274,8 @@ export default function POS({ state, update, user, notify, navigate }) {
                 I have manually verified the GCash payment.
               </label>
               <p className="helper">
-                No GCash API or payment verification service is connected.
+                Confirm the payment in your GCash account before completing the
+                sale.
               </p>
             </>
           )}
@@ -322,21 +300,17 @@ export default function POS({ state, update, user, notify, navigate }) {
       <aside className="pos-categories">
         {[
           ["All Products", "imgBoxes"],
-          ["Rice (By Kilo)", "imgPackage1"],
-          ["Rice (By Sack)", "imgPackagePlus"],
-        ].map(([c, icon]) => (
+          ["Rice (By kg)", "imgPackage1"],
+          ["Rice (By sk)", "imgPackagePlus"],
+        ].map(([c]) => (
           <button
             key={c}
             className={c === category ? "active" : ""}
             onClick={() => setCategory(c)}
           >
-            <Icon screen="4-17" name={icon} />
             <span>{c}</span>
           </button>
         ))}
-        <button className="mt-auto" onClick={() => navigate("sales-history")}>
-          Sales History
-        </button>
       </aside>
       <main className="product-browser">
         <SearchField value={search} onChange={setSearch} />

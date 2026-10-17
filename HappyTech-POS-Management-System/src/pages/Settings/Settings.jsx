@@ -1,3 +1,4 @@
+import "./Settings.css";
 import { useState } from "react";
 import {
   Pencil,
@@ -116,18 +117,18 @@ export default function Settings({
     const record = {
       id: crypto.randomUUID(),
       date: new Date().toISOString(),
-      status: "Demo export",
+      status: "Exported",
     };
-    downloadJSON("happytech-demo-backup.json", {
+    downloadJSON("happytech-backup.json", {
       format: "happytech-demo-v1",
       exportedAt: record.date,
       data: state,
     });
     update(
       (s) => ({ ...s, backups: [record, ...s.backups] }),
-      "Downloaded local demo backup",
+      "Downloaded backup",
     );
-    notify("Demo backup downloaded");
+    notify("Backup downloaded");
   };
   const loadBackup = async (e) => {
     const f = e.target.files?.[0];
@@ -166,9 +167,38 @@ export default function Settings({
       setRestore(d);
       setError("");
     } catch {
-      notify("Invalid or incompatible HappyTech demo backup.");
+      notify("Invalid or incompatible HappyTech backup.");
     }
     e.target.value = "";
+  };
+  const uploadLogo = async (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    if (
+      !["image/png", "image/jpeg", "image/webp"].includes(file.type) ||
+      file.size > 1024 * 1024
+    ) {
+      notify("Choose a PNG, JPEG, or WebP image smaller than 1 MB.");
+      return;
+    }
+    try {
+      const image = await createImageBitmap(file);
+      image.close();
+      const logo = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      update(
+        (s) => ({ ...s, settings: { ...s.settings, storeLogo: logo } }),
+        "Updated store logo",
+      );
+      notify("Store logo updated");
+    } catch {
+      notify("This image could not be opened. Choose another image.");
+    }
   };
   const fields = (entries) => (
     <div className="settings-fields">
@@ -226,8 +256,7 @@ export default function Settings({
                     "Set your stock alerts and sales targets.",
                   "My Account & Security":
                     "Manage your account and recovery options.",
-                  "Data & Backup":
-                    "Export and restore the local frontend demo data.",
+                  "Data & Backup": "Export and restore your store data.",
                 }[tab]
               }
             </p>
@@ -235,6 +264,34 @@ export default function Settings({
         </div>
         {tab === "Store Information" && (
           <Card className="p-6">
+            <div className="store-logo-settings">
+              {settings.storeLogo && (
+                <img src={settings.storeLogo} alt="Current store logo" />
+              )}
+              <Field label="Sidebar logo (PNG, JPEG, WebP — max 1 MB)">
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  onChange={uploadLogo}
+                />
+              </Field>
+              {settings.storeLogo && (
+                <Button
+                  onClick={() => {
+                    update(
+                      (s) => ({
+                        ...s,
+                        settings: { ...s.settings, storeLogo: "" },
+                      }),
+                      "Removed store logo",
+                    );
+                    notify("Store logo removed");
+                  }}
+                >
+                  Remove Logo
+                </Button>
+              )}
+            </div>
             {fields([
               ["Store Name", settings.storeName],
               ["Business Address", settings.address],
@@ -342,8 +399,7 @@ export default function Settings({
               />
             )}
             <p className="helper mt-4">
-              Payments are verified manually. This demo does not connect to
-              GCash.
+              Payments are verified manually. No connection is made to GCash.
             </p>
             <div className="settings-footer">
               <Button
@@ -449,20 +505,18 @@ export default function Settings({
         )}
         {tab === "Data & Backup" && user.role === "Super Admin" && (
           <Card className="p-6">
-            <h2>Local demo backups</h2>
+            <h2>Data backups</h2>
             <p className="helper mt-3 mb-5">
-              Download and restore this browser's mock data. Scheduled database
-              backups require the future backend; no automatic backups run in
-              this frontend.
+              Download a backup or restore previously saved store data.
             </p>
             <div className="flex gap-3 flex-wrap">
               <Button primary onClick={backup}>
                 <Download size={17} />
-                Download Demo Backup
+                Download Backup
               </Button>
               <label className="btn cursor-pointer">
                 <Upload size={17} />
-                Restore Demo Backup
+                Restore Backup
                 <input
                   className="hidden"
                   type="file"
@@ -475,11 +529,14 @@ export default function Settings({
               {state.backups.length ? (
                 state.backups.map((b) => (
                   <div className="notification-row" key={b.id}>
-                    {dateTime(b.date)} <Badge>{b.status}</Badge>
+                    {dateTime(b.date)}{" "}
+                    <Badge>
+                      {b.status === "Demo export" ? "Exported" : b.status}
+                    </Badge>
                   </div>
                 ))
               ) : (
-                <Empty>No demo backups exported yet.</Empty>
+                <Empty>No backups exported yet.</Empty>
               )}
             </div>
           </Card>
@@ -606,10 +663,10 @@ export default function Settings({
         </Modal>
       )}
       {restore && (
-        <Modal title="Restore Demo Backup" onClose={() => setRestore(null)}>
+        <Modal title="Restore Backup" onClose={() => setRestore(null)}>
           <p>
             This will replace the current browser's products, sales, accounts,
-            and settings with the selected demo backup.
+            and settings with the selected backup.
           </p>
           <div className="modal-actions">
             <Button onClick={() => setRestore(null)}>Cancel</Button>
@@ -622,13 +679,13 @@ export default function Settings({
                     logs: restore.logs || [],
                     backups: restore.backups || [],
                   }),
-                  "Restored local demo backup",
+                  "Restored backup",
                 );
                 setRestore(null);
-                notify("Demo backup restored");
+                notify("Backup restored");
               }}
             >
-              Restore Demo Data
+              Restore Data
             </Button>
           </div>
         </Modal>

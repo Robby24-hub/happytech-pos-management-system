@@ -1,3 +1,4 @@
+import "./Login.css";
 import { useState } from "react";
 import {
   Shield,
@@ -30,12 +31,12 @@ export default function Login({ users, settings, onLogin }) {
         onLogin(selected);
         return;
       }
-      setError("Incorrect recovery PIN. Demo recovery PIN: 4321.");
+      setError("Incorrect recovery PIN.");
       return;
     }
     if (selected?.pin === pin) onLogin(selected);
     else {
-      setError("Incorrect PIN. Try 1234 for the demo accounts.");
+      setError("Incorrect PIN. Please try again.");
       setPin("");
     }
   };
@@ -108,7 +109,7 @@ export default function Login({ users, settings, onLogin }) {
                   [
                     "Super Admin",
                     ShieldCheck,
-                    "Manage administrators, activity logs, and demo backups.",
+                    "Manage administrators, activity logs, and backups.",
                   ],
                 ].map(([r, I, desc]) => (
                   <button
@@ -233,16 +234,10 @@ export default function Login({ users, settings, onLogin }) {
                   {recover ? "Back to sign in" : "Forgot PIN?"}
                 </button>
               )}
-              <p className="helper text-center mt-4">
-                Demo PIN: <b>1234</b>
-                {recover ? " · Recovery: 4321" : ""}
-              </p>
             </>
           )}
         </section>
-        <p className="login-footer">
-          HappyTech POS & Management System · Frontend demo
-        </p>
+        <p className="login-footer">HappyTech POS & Management System</p>
       </main>
     </div>
   );

@@ -1,0 +1,7 @@
+/* Chart: local styles and responsive overrides. Shared theme/utilities come from index.css. */
+@reference "../../index.css";
+@layer components.ui {
+  .sales-chart {
+    @apply block w-full min-w-0;
+  }
+}
