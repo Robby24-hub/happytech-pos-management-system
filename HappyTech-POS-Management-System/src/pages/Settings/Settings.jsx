@@ -23,6 +23,11 @@ import {
   Badge,
   Empty,
 } from "../../components/UI";
+import {
+  groupUnit,
+  groupThreshold,
+  normalizeState,
+} from "../../data/inventory";
 import { dateTime } from "../../data/mock";
 const sections = [
   ["Store Information", "imgStore"],
@@ -101,6 +106,15 @@ export default function Settings({
         `${draft.id ? "Updated" : "Created"} cashier ${u.name}`,
       );
     } else {
+      if (
+        edit === "preferences" &&
+        Object.values(draft.groupThresholds || {}).some(
+          (v) => v === "" || !Number.isFinite(Number(v)) || Number(v) < 0,
+        )
+      ) {
+        setError("Enter a nonnegative threshold for each group.");
+        return;
+      }
       if (edit === "security" && !/^\d{4}$/.test(draft.recoveryPin)) {
         setError("Recovery PIN must contain 4 digits.");
         return;
@@ -442,7 +456,10 @@ export default function Settings({
         {tab === "Sales & Inventory" && (
           <Card className="p-6">
             {fields([
-              ["Low Stock Threshold", `${settings.lowStock} kg`],
+              ...state.groups.map((g) => [
+                `Default Low Stock Threshold for ${g} (${groupUnit(state, g)})`,
+                groupThreshold(state, g),
+              ]),
               ["Daily Sales Target", `PHP ${settings.dailyTarget}`],
               ["Weekly Sales Target", `PHP ${settings.weeklyTarget}`],
               ["Monthly Sales Target", `PHP ${settings.monthlyTarget}`],
@@ -451,7 +468,7 @@ export default function Settings({
               <Button
                 onClick={() =>
                   open("preferences", {
-                    lowStock: settings.lowStock,
+                    groupThresholds: { ...settings.groupThresholds },
                     dailyTarget: settings.dailyTarget,
                     weeklyTarget: settings.weeklyTarget,
                     monthlyTarget: settings.monthlyTarget,
@@ -559,7 +576,16 @@ export default function Settings({
         >
           <form onSubmit={save}>
             {Object.entries(draft)
-              .filter(([k]) => !["id", "role", "active", "gcashQR"].includes(k))
+              .filter(
+                ([k]) =>
+                  ![
+                    "id",
+                    "role",
+                    "active",
+                    "gcashQR",
+                    "groupThresholds",
+                  ].includes(k),
+              )
               .map(([key, value]) => (
                 <Field
                   key={key}
@@ -619,6 +645,35 @@ export default function Settings({
                   }
                 />
               ))}
+            {edit === "preferences" &&
+              state.groups.map((g) => (
+                <Field
+                  key={g}
+                  label={`Default Low Stock Threshold for ${g} (${groupUnit(state, g)})`}
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  required
+                  value={draft.groupThresholds?.[g] ?? groupThreshold(state, g)}
+                  onChange={(e) =>
+                    setDraft({
+                      ...draft,
+                      groupThresholds: {
+                        ...draft.groupThresholds,
+                        [g]:
+                          e.target.value === "" ? "" : Number(e.target.value),
+                      },
+                    })
+                  }
+                />
+              ))}
+            {edit === "preferences" && (
+              <p className="helper">
+                Defaults apply to new products. Existing product thresholds keep
+                their individual values. Wholesale defaults convert the group
+                threshold into complete packs.
+              </p>
+            )}
             {edit === "payments" && (
               <Field label="Static QR image (PNG or JPEG, max 1 MB)">
                 <input
@@ -675,7 +730,7 @@ export default function Settings({
               onClick={() => {
                 update(
                   () => ({
-                    ...restore,
+                    ...normalizeState(restore),
                     logs: restore.logs || [],
                     backups: restore.backups || [],
                   }),

@@ -11,3 +11,11 @@
     @apply border-red-200 bg-red-50 text-red-700 hover:bg-red-100;
   }
 }
+@layer components.ui {
+  .btn-warning {
+    @apply border-orange-300 bg-orange-50 text-orange-800 hover:bg-orange-100;
+  }
+  .btn-alert {
+    @apply border-yellow-300 bg-yellow-50 text-yellow-800 hover:bg-yellow-100;
+  }
+}

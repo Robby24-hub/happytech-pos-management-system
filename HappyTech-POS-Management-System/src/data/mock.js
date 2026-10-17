@@ -116,7 +116,7 @@ export const dateTime = (v) =>
 export const stockStatus = (p, threshold) =>
   p.stock === 0
     ? "Out of Stock"
-    : p.stock < threshold
+    : p.stock < (p.lowStock ?? threshold)
       ? "Low Stock"
       : "In Stock";
 export function within(date, period, start, end) {

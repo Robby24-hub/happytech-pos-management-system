@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Card, Stat, Select, Icon } from "../../components/UI";
 import Chart from "../../components/Chart";
+import { stockAlerts } from "../../data/inventory";
 import { money } from "../../data/mock";
 export default function Dashboard({ state, navigate }) {
   const [period, setPeriod] = useState("Today");
@@ -58,13 +59,10 @@ export default function Dashboard({ state, navigate }) {
         />
         <Stat
           label="LOW STOCK ITEMS"
-          value={
-            state.products.filter((p) => p.stock < state.settings.lowStock)
-              .length
-          }
+          value={new Set(stockAlerts(state).map((a) => a.productId)).size}
           caption="Needs restocking"
           icon="imgLucideAlertCircle"
-          alert
+          warning
         />
       </div>
       <Card className="overview">

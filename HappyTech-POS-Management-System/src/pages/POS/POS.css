@@ -241,3 +241,17 @@
     text-align: center;
   }
 }
+.pos-product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.stock-transfer-warning {
+  padding: 12px;
+  border: 1px solid #fdba74;
+  background: #fff7ed;
+  color: #9a3412;
+  border-radius: 10px;
+  margin-bottom: 16px;
+}

@@ -8,6 +8,7 @@ export function Stat({
   icon,
   screen = "45-5530",
   alert = false,
+  warning = false,
   onClick,
   active,
 }) {
@@ -19,7 +20,9 @@ export function Stat({
       onClick={onClick}
       aria-pressed={onClick ? Boolean(active) : undefined}
     >
-      <div className={`stat-icon ${alert ? "alert" : ""}`}>
+      <div
+        className={`stat-icon ${alert ? "alert" : warning ? "warning" : ""}`}
+      >
         {typeof icon === "string" ? <Icon screen={screen} name={icon} /> : icon}
       </div>
       <div className="min-w-0">

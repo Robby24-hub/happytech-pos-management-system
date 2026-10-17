@@ -1,0 +1,42 @@
+@reference "../../index.css";
+@layer components.ui {
+  .notice-item {
+    @apply rounded-xl border mb-4 p-4;
+  }
+  .notice-item.alert {
+    @apply bg-yellow-50 border-yellow-300;
+  }
+  .notice-item.warning {
+    @apply bg-orange-50 border-orange-300;
+  }
+  .notice-item.danger {
+    @apply bg-red-50 border-red-200;
+  }
+  .notice-item.read {
+    @apply bg-white;
+  }
+  .notice-target {
+    @apply flex flex-col gap-2 text-left w-full;
+  }
+  .notice-target small {
+    @apply text-muted;
+  }
+  .notice-actions {
+    @apply flex gap-2 flex-wrap mt-3;
+  }
+}
+.notification-count {
+  position: absolute;
+  top: -5px;
+  right: -7px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 4px;
+  display: grid;
+  place-items: center;
+  border-radius: 20px;
+  color: white;
+  background: #dc2626;
+  font-size: 10px;
+  font-weight: 700;
+}

@@ -8,7 +8,7 @@
     @apply bg-mint text-green-700;
   }
   .badge.amber {
-    @apply bg-amber-50 text-amber-700;
+    @apply bg-orange-50 text-orange-800;
   }
   .badge.red {
     @apply bg-red-50 text-red-600;

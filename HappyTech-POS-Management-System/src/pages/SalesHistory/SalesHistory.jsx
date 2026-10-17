@@ -24,6 +24,8 @@ export default function SalesHistory({ state, update, user, notify }) {
     [refund, setRefund] = useState(false),
     [remove, setRemove] = useState(false),
     [pin, setPin] = useState(""),
+    [reason, setReason] = useState(""),
+    [otherReason, setOtherReason] = useState(""),
     [error, setError] = useState("");
   const sales = state.sales.filter(
     (s) =>
@@ -95,35 +97,53 @@ export default function SalesHistory({ state, update, user, notify }) {
     e.preventDefault();
     const valid = state.users.some(
       (u) =>
-        u.active &&
-        u.pin === pin &&
-        (user.role === "Cashier" ? u.id === user.id : u.role !== "Cashier"),
+        u.active && u.pin === pin && ["Admin", "Super Admin"].includes(u.role),
     );
     if (!valid) {
       setError("Incorrect PIN. Please try again.");
       return;
     }
+    const explanation = reason === "Other reason" ? otherReason.trim() : reason;
+    if (!explanation) {
+      setError(
+        "Select a refund reason and describe it if choosing Other reason.",
+      );
+      return;
+    }
     if (current.status === "Refunded") return;
+    const request = {
+      id: crypto.randomUUID(),
+      saleId: current.uuid,
+      invoice: current.id,
+      items: structuredClone(current.items),
+      reason: explanation,
+      status: "pending",
+      requestedBy: user.name,
+      date: new Date().toISOString(),
+    };
     update(
-      (s) => ({
-        ...s,
-        sales: s.sales.map((t) =>
-          t.uuid === current.uuid ? { ...t, status: "Refunded" } : t,
-        ),
-        products: s.products.map((p) => ({
-          ...p,
-          stock:
-            p.stock +
-            current.items
-              .filter((i) => i.productId === p.id)
-              .reduce((n, i) => n + i.qty * i.multiplier, 0),
-        })),
-      }),
+      (s) =>
+        s.sales.find((t) => t.uuid === current.uuid)?.status === "Refunded"
+          ? s
+          : {
+              ...s,
+              sales: s.sales.map((t) =>
+                t.uuid === current.uuid
+                  ? {
+                      ...t,
+                      status: "Refunded",
+                      refundReason: explanation,
+                      returnApprovalId: request.id,
+                    }
+                  : t,
+              ),
+              returnApprovals: [...s.returnApprovals, request],
+            },
       `Refunded ${current.id}`,
     );
     setRefund(false);
     setPin("");
-    notify("Refund completed · retail stock restored");
+    notify("Refund completed · stock return awaiting owner approval", "alert");
   };
   return (
     <main className="main sales-history">
@@ -286,22 +306,59 @@ export default function SalesHistory({ state, update, user, notify }) {
             <form onSubmit={doRefund}>
               <p className="mb-5">
                 Refund {current.id} for <b>{money(current.total)}</b>? The full
-                order will be returned to retail stock.
+                order will be flagged for owner stock approval. Inventory stays
+                unchanged until approval.
               </p>
               <Field
-                label="Confirm with your 4-digit PIN"
+                label="Store owner's 4-digit PIN"
+                required
                 type="password"
                 inputMode="numeric"
                 maxLength={4}
                 value={pin}
                 onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
               />
+              <Field label="Reason for refund">
+                <select
+                  required
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                >
+                  <option value="">Select a reason</option>
+                  {[
+                    "Damaged or defective product",
+                    "Wrong product purchased",
+                    "Incorrect quantity",
+                    "Duplicate transaction",
+                    "Customer changed their mind",
+                    "Other reason",
+                  ].map((r) => (
+                    <option key={r}>{r}</option>
+                  ))}
+                </select>
+              </Field>
+              {reason === "Other reason" && (
+                <Field
+                  label="Other refund reason"
+                  required
+                  maxLength={500}
+                  value={otherReason}
+                  onChange={(e) => setOtherReason(e.target.value)}
+                />
+              )}
               {error && <p className="error">{error}</p>}
               <div className="modal-actions">
                 <Button type="button" onClick={() => setRefund(false)}>
                   Cancel
                 </Button>
-                <Button danger disabled={pin.length !== 4}>
+                <Button
+                  warning
+                  disabled={
+                    pin.length !== 4 ||
+                    !reason ||
+                    (reason === "Other reason" && !otherReason.trim())
+                  }
+                >
                   Confirm Refund
                 </Button>
               </div>
@@ -315,13 +372,29 @@ export default function SalesHistory({ state, update, user, notify }) {
                   showActions={false}
                 />
               </div>
+              {current.status === "Refunded" && (
+                <div className="refund-status">
+                  <strong>
+                    Reason: {current.refundReason || "Not recorded"}
+                  </strong>
+                  <p>
+                    Stock return:{" "}
+                    {state.returnApprovals.find(
+                      (r) => r.id === current.returnApprovalId,
+                    )?.status || "Previously processed"}
+                  </p>
+                </div>
+              )}
               <div className="transaction-actions no-print">
                 <div className="transaction-action-row">
                   <Button
+                    warning
                     disabled={current.status === "Refunded"}
                     onClick={() => {
                       setRefund(true);
                       setPin("");
+                      setReason("");
+                      setOtherReason("");
                       setError("");
                     }}
                   >

@@ -1,15 +1,48 @@
-Happy Tech Store interface update
+Happy Tech Store — Inventory, Refund Approvals & Notifications Update
 
-Extract this ZIP into your project root and overwrite the included files. Do NOT delete src: this is a partial update for the routed version. Restart Vite with npm run dev. No new dependencies are needed.
+INSTALLATION
+1. Back up your project first.
+2. Extract this ZIP into your existing project root (the folder containing package.json).
+3. Allow the included src files to overwrite their matching files. Keep all other files.
+   Do NOT delete src. This ZIP contains only changed/new files.
+4. Run npm run dev. No new packages or npm install are needed.
 
-Changes: removed visible demo labels and example PIN hints; lighter input placeholders; consistent black/white sidebar icons; tablet/mobile expandable sidebar with backdrop, close button, labels, logo and Happy Tech Store name; no automatic printing on sale completion; text-only POS categories using kg/sk; 80 mm thermal print summaries and receipts; clickable transaction rows; receipt-only scrolling and fixed refund/delete/print actions; clickable inventory stock filters; group creation/deletion/reassignment under Product Group > Manage Groups; Settings > Store Information logo upload/remove (PNG/JPEG/WebP, 1 MB).
+CHANGES
+- Product groups store their own default unit.
+- Settings provides a default low-stock threshold for every group using that unit.
+- Product creation includes group, image, name, retail stock, selling price, editable retail threshold, POS availability, and optional wholesale sizes with separate prices and thresholds.
+- Wholesale stock is one shared pool in the group's base unit. Selling a 25 kg pack subtracts 25 kg from wholesale stock. Wholesale thresholds count complete packs and default to the group threshold divided by pack size, rounded up. All thresholds remain editable.
+- POS uses the configured units, sizes, prices, and stock pools.
+- Refunds require an active owner/admin PIN plus a reason. Other reason requires an explanation.
+- Successful refunds do not increase stock. A yellow approval section appears above the Inventory table. Owners/admins can approve or reject; approval restores the original retail/wholesale pool once. Reject leaves stock unchanged.
+- Products awaiting a return decision cannot be deleted until the decision is made. Group reassignment requires matching units to avoid changing the meaning of stored stock.
+- Notifications open the relevant page, support marking as read/removal, and persist those choices. The unread badge displays a maximum of 99+.
+- Yellow alerts, orange warnings, and red danger states.
 
-Sidebar: expand with the top sidebar icon on screens up to 1024px. Tap outside, close, press Escape, or select a page to close.
+EXISTING DATA
+Existing saved products, groups, accounts, sales, and settings are preserved. Missing unit/threshold fields are filled automatically. Previously processed refunds are not retroactively queued because their stock was already handled by the earlier version.
 
-Group deletion: retain at least one group; move existing products to another group before deletion.
-Transaction deletion: confirms before removing a record; does not adjust stock. Refund restores stock.
-Printing: only manual print buttons open the browser print dialog. Output is 80 mm wide with 4 mm margins and paginated 297 mm sheets; select the matching 80 mm thermal printer/paper in the print dialog.
+VALIDATION
+Production build passed. Browser checks covered group creation, settings defaults, product overrides, wholesale sale pricing/stock deduction, refund reason validation, wrong PIN rejection, pending stock, approval/rejection, notification navigation/persistence, 99+ count, and desktop/mobile product modal layout.
 
-Your request for an additional Add Group field ended at “asking for the”. No unspecified field was invented; Group Name remains required.
-
-Existing browser data and backup format remain compatible. No backend or authentication changes.
+FILES INCLUDED
+src/App.jsx
+src/components/Badge/Badge.css
+src/components/Button/Button.css
+src/components/Button/Button.jsx
+src/components/Notifications/Notifications.css
+src/components/Notifications/Notifications.jsx
+src/components/Stat/Stat.css
+src/components/Stat/Stat.jsx
+src/components/Toast/Toast.css
+src/components/Toast/Toast.jsx
+src/data/inventory.js
+src/data/mock.js
+src/pages/Dashboard/Dashboard.jsx
+src/pages/Inventory/Inventory.css
+src/pages/Inventory/Inventory.jsx
+src/pages/POS/POS.css
+src/pages/POS/POS.jsx
+src/pages/SalesHistory/SalesHistory.css
+src/pages/SalesHistory/SalesHistory.jsx
+src/pages/Settings/Settings.jsx

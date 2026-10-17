@@ -5,12 +5,14 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom";
+import { normalizeState, notificationsFor } from "./data/inventory";
+import Notifications from "./components/Notifications/Notifications";
 import Sidebar from "./components/Sidebar";
 import { pages, getAllowedPages } from "./routing/pages";
 import { useState, useEffect, useCallback } from "react";
 import { Bell, LogOut } from "lucide-react";
-import { seedState, stockStatus } from "./data/mock";
-import { Header, Modal, Button, Toast, Badge, Empty } from "./components/UI";
+import { seedState } from "./data/mock";
+import { Header, Modal, Button, Toast } from "./components/UI";
 import Login from "./pages/Login/Login";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import POS from "./pages/POS/POS";
@@ -23,11 +25,13 @@ const KEY = "happytech-demo-v1";
 function readState() {
   try {
     const s = JSON.parse(localStorage.getItem(KEY));
-    return s?.products && s?.settings && s?.sales && s?.users
-      ? s
-      : structuredClone(seedState);
+    return normalizeState(
+      s?.products && s?.settings && s?.sales && s?.users
+        ? s
+        : structuredClone(seedState),
+    );
   } catch {
-    return structuredClone(seedState);
+    return normalizeState(structuredClone(seedState));
   }
 }
 export default function App() {
@@ -54,7 +58,10 @@ export default function App() {
       return () => clearTimeout(t);
     }
   }, [toast]);
-  const notify = useCallback((message) => setToast(message), []);
+  const notify = useCallback(
+    (message, tone = "success") => setToast({ message, tone }),
+    [],
+  );
   const update = useCallback(
     (fn, action) => {
       setState((s) => {
@@ -127,9 +134,8 @@ export default function App() {
       </>
     );
   }
-  const low = state.products.filter(
-    (p) => stockStatus(p, state.settings.lowStock) !== "In Stock",
-  );
+  const notifications = notificationsFor(state, user.role);
+  const unread = notifications.filter((n) => !n.read).length;
   return (
     <div className="app-shell">
       <Sidebar
@@ -150,7 +156,11 @@ export default function App() {
             onClick={() => setOverlay("notifications")}
           >
             <Bell size={19} />
-            {low.length > 0 && <span className="notification-dot" />}
+            {unread > 0 && (
+              <span className="notification-count">
+                {unread > 99 ? "99+" : unread}
+              </span>
+            )}
           </button>
         </Header>
         {storageError && (
@@ -218,7 +228,7 @@ export default function App() {
           <p>Are you sure you want to log out of HappyTech?</p>
           <div className="modal-actions">
             <Button onClick={() => setOverlay(null)}>Cancel</Button>
-            <Button primary onClick={logout}>
+            <Button danger onClick={logout}>
               <LogOut size={17} />
               Log Out
             </Button>
@@ -226,24 +236,12 @@ export default function App() {
         </Modal>
       )}
       {overlay === "notifications" && (
-        <Modal title="Notifications" drawer onClose={() => setOverlay(null)}>
-          {low.length ? (
-            low.map((p) => (
-              <div key={p.id} className="notification-row">
-                <strong>{p.name}</strong>
-                <p>
-                  {p.stock} kg retail stock ·{" "}
-                  <Badge>{stockStatus(p, state.settings.lowStock)}</Badge>
-                </p>
-              </div>
-            ))
-          ) : (
-            <Empty>All products have healthy stock.</Empty>
-          )}
-          <p className="helper mt-5">
-            Stock alerts reflect current inventory levels.
-          </p>
-        </Modal>
+        <Notifications
+          notifications={notifications}
+          update={update}
+          navigate={navigate}
+          onClose={() => setOverlay(null)}
+        />
       )}
     </div>
   );

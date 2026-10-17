@@ -23,40 +23,65 @@ export default function POS({ state, update, user, notify }) {
     [pin, setPin] = useState(""),
     [error, setError] = useState(""),
     [transferQty, setTransferQty] = useState(1);
+  const categories = [
+    "All Products",
+    ...state.groups.flatMap((g) => [
+      `${g} (By ${state.groupUnits[g]})`,
+      ...(state.products.some((p) => p.group === g && p.wholesaleUnits.length)
+        ? [`${g} (By sk)`]
+        : []),
+    ]),
+  ];
   const options = state.products
     .filter((p) => p.available)
     .flatMap((p) => [
-      ...(p.id === "sinandomeng"
-        ? []
-        : [{ ...p, key: p.id + "-kg", saleUnit: "kg", multiplier: 1 }]),
-      ...(["jasmine", "denorado", "sinandomeng"].includes(p.id)
-        ? [
-            {
-              ...p,
-              key: p.id + "-sack",
-              saleUnit: "sack",
-              multiplier: p.id === "jasmine" ? 25 : 50,
-            },
-          ]
-        : []),
+      {
+        ...p,
+        key: p.id + "-retail",
+        saleUnit: p.unit,
+        multiplier: 1,
+        pool: "retail",
+        salePrice: p.price,
+        availableStock: p.stock,
+      },
+      ...p.wholesaleUnits.map((v) => ({
+        ...p,
+        key: p.id + "-" + v.id,
+        saleUnit: `${v.size} ${p.unit} pack`,
+        multiplier: v.size,
+        pool: "wholesale",
+        variantId: v.id,
+        salePrice: v.price,
+        availableStock: p.wholesale,
+      })),
     ])
     .filter(
       (p) =>
         (category === "All Products" ||
-          (category === "Rice (By kg)" && p.saleUnit === "kg") ||
-          (category === "Rice (By sk)" && p.saleUnit === "sack")) &&
+          category ===
+            `${p.group} (By ${p.pool === "retail" ? p.unit : "sk"})`) &&
         p.name.toLowerCase().includes(search.toLowerCase()),
     );
-  options.sort((a, b) => (a.saleUnit === "sack") - (b.saleUnit === "sack"));
   const total =
     Math.round(cart.reduce((s, i) => s + i.qty * i.price, 0) * 100) / 100;
-  const used = (id) =>
+  const used = (id, pool = "retail") =>
     cart
-      .filter((i) => i.productId === id)
+      .filter((i) => i.productId === id && (i.pool || "retail") === pool)
       .reduce((n, i) => n + i.qty * i.multiplier, 0);
   const add = (p) => {
     const product = state.products.find((x) => x.id === p.id);
-    if (product.stock - used(p.id) < p.multiplier) {
+    if (
+      (p.pool === "wholesale" ? product.wholesale : product.stock) -
+        used(p.id, p.pool) <
+      p.multiplier
+    ) {
+      if (p.pool === "wholesale") {
+        notify(
+          "Insufficient wholesale stock. Restock this product in Inventory.",
+          "warning",
+        );
+        return;
+      }
       setModal({ type: "transfer", product: p });
       setTransferQty(p.multiplier);
       setPin("");
@@ -74,8 +99,11 @@ export default function POS({ state, update, user, notify }) {
               productId: p.id,
               name: p.name,
               unit: p.saleUnit,
+              baseUnit: p.unit,
+              pool: p.pool,
+              variantId: p.variantId,
               multiplier: p.multiplier,
-              price: p.price * p.multiplier,
+              price: p.salePrice,
               qty: 1,
             },
           ];
@@ -84,9 +112,12 @@ export default function POS({ state, update, user, notify }) {
   const change = (item, qty) => {
     if (!Number.isFinite(qty) || qty < 0) return;
     const p = state.products.find((p) => p.id === item.productId);
-    const other = used(p.id) - item.qty * item.multiplier;
-    if (qty * item.multiplier + other > p.stock) {
-      notify("Quantity exceeds available retail stock.");
+    const other = used(p.id, item.pool) - item.qty * item.multiplier;
+    if (
+      qty * item.multiplier + other >
+      (item.pool === "wholesale" ? p.wholesale : p.stock)
+    ) {
+      notify("Quantity exceeds available stock.", "warning");
       return;
     }
     setCart((c) =>
@@ -125,7 +156,7 @@ export default function POS({ state, update, user, notify }) {
             : x,
         ),
       }),
-      `Transferred ${transferQty} kg of ${p.name} to retail`,
+      `Transferred ${transferQty} ${p.unit} of ${p.name} to retail`,
     );
     setModal(null);
     notify("Stock transferred. Tap the product to add it.");
@@ -138,8 +169,10 @@ export default function POS({ state, update, user, notify }) {
       return;
     const shortages = cart.some(
       (i) =>
-        used(i.productId) >
-        state.products.find((p) => p.id === i.productId).stock,
+        used(i.productId, i.pool) >
+        (i.pool === "wholesale"
+          ? state.products.find((p) => p.id === i.productId).wholesale
+          : state.products.find((p) => p.id === i.productId).stock),
     );
     if (shortages) {
       setError(
@@ -165,7 +198,9 @@ export default function POS({ state, update, user, notify }) {
         sales: [sale, ...s.sales],
         products: s.products.map((p) => ({
           ...p,
-          stock: Math.round((p.stock - used(p.id)) * 100) / 100,
+          stock: Math.round((p.stock - used(p.id, "retail")) * 100) / 100,
+          wholesale:
+            Math.round((p.wholesale - used(p.id, "wholesale")) * 100) / 100,
         })),
       }),
       `Completed ${sale.id} for ${money(total)}`,
@@ -298,11 +333,7 @@ export default function POS({ state, update, user, notify }) {
   return (
     <div className="pos-layout">
       <aside className="pos-categories">
-        {[
-          ["All Products", "imgBoxes"],
-          ["Rice (By kg)", "imgPackage1"],
-          ["Rice (By sk)", "imgPackagePlus"],
-        ].map(([c]) => (
+        {categories.map((c) => (
           <button
             key={c}
             className={c === category ? "active" : ""}
@@ -317,22 +348,38 @@ export default function POS({ state, update, user, notify }) {
         <div className="products-grid">
           {options.map((p) => (
             <button
-              className={`product-card ${p.stock < p.multiplier ? "out" : ""}`}
+              className={`product-card ${p.availableStock < p.multiplier ? "out" : ""}`}
               key={p.key}
               onClick={() => add(p)}
             >
               <div className="product-art">
-                <Icon screen="4-17" name={p.icon} />
+                {p.image ? (
+                  <img
+                    src={p.image}
+                    alt={p.name}
+                    className="pos-product-image"
+                  />
+                ) : (
+                  <Icon screen="4-17" name={p.icon} />
+                )}
               </div>
               <strong>
-                {p.name} {p.saleUnit === "sack" ? `${p.multiplier}kg` : "1kg"}
+                {p.name} {p.multiplier}
+                {p.unit}
               </strong>
-              <small>{p.multiplier}kg</small>
-              <b>{money(p.price * p.multiplier)}</b>
-              <small className={p.stock < p.multiplier ? "text-red-500" : ""}>
-                {p.stock < p.multiplier
+              <small>
+                {p.multiplier} {p.unit}
+                {p.pool === "wholesale" ? " · wholesale" : ""}
+              </small>
+              <b>{money(p.salePrice)}</b>
+              <small
+                className={
+                  p.availableStock < p.multiplier ? "text-red-500" : ""
+                }
+              >
+                {p.availableStock < p.multiplier
                   ? "Out of stock · tap"
-                  : `Stock: ${p.saleUnit === "kg" ? p.stock : Math.floor(p.stock / p.multiplier)}`}
+                  : `Stock: ${p.pool === "retail" ? p.stock : Math.floor(p.wholesale / p.multiplier)}`}
               </small>
             </button>
           ))}
@@ -379,11 +426,19 @@ export default function POS({ state, update, user, notify }) {
                       aria-label={`Quantity for ${i.name}`}
                       type="number"
                       min="0"
-                      step={i.unit === "kg" ? "0.25" : "1"}
+                      step={
+                        i.pool === "wholesale" || i.baseUnit === "pc"
+                          ? "1"
+                          : "0.25"
+                      }
                       value={i.qty}
                       onChange={(e) => {
                         const q = Number(e.target.value);
-                        if (i.unit === "sack" && !Number.isInteger(q)) return;
+                        if (
+                          (i.pool === "wholesale" || i.baseUnit === "pc") &&
+                          !Number.isInteger(q)
+                        )
+                          return;
                         change(i, q);
                       }}
                     />
@@ -452,7 +507,7 @@ export default function POS({ state, update, user, notify }) {
             </>
           ) : (
             <form onSubmit={transfer}>
-              <p className="mb-4">
+              <p className="stock-transfer-warning">
                 {modal.product.name} has insufficient retail stock. Owner
                 approval is required to transfer wholesale stock.
               </p>
@@ -463,11 +518,11 @@ export default function POS({ state, update, user, notify }) {
                     state.products.find((p) => p.id === modal.product.id)
                       .wholesale
                   }{" "}
-                  kg
+                  {modal.product.unit}
                 </b>
               </p>
               <Field
-                label="Quantity to transfer (kg)"
+                label={`Quantity to transfer (${modal.product.unit})`}
                 type="number"
                 min="0.01"
                 step="0.01"
@@ -489,7 +544,7 @@ export default function POS({ state, update, user, notify }) {
                 <Button type="button" onClick={() => setModal(null)}>
                   Cancel
                 </Button>
-                <Button primary disabled={pin.length !== 4}>
+                <Button warning disabled={pin.length !== 4}>
                   Approve Transfer
                 </Button>
               </div>

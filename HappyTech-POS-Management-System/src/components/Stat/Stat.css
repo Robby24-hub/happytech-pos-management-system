@@ -70,3 +70,9 @@
     box-shadow: 0 0 0 1px var(--color-green);
   }
 }
+
+@layer components.ui {
+  .stat-icon.warning {
+    @apply bg-orange-50 text-orange-700;
+  }
+}
