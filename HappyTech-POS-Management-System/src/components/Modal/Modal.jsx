@@ -13,6 +13,12 @@ export function Modal({
   closeLabel = "Close dialog",
 }) {
   const ref = useRef();
+  const onCloseRef = useRef(onClose);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
   useEffect(() => {
     const previous = document.activeElement;
     const focusables = () =>
@@ -21,7 +27,7 @@ export function Modal({
       ].filter((e) => !e.disabled);
     focusables()[0]?.focus();
     const key = (e) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") onCloseRef.current();
       if (e.key === "Tab") {
         const a = focusables();
         if (e.shiftKey && document.activeElement === a[0]) {
@@ -38,7 +44,7 @@ export function Modal({
       document.removeEventListener("keydown", key);
       previous?.focus();
     };
-  }, [onClose]);
+  }, []);
   return (
     <div
       className={`modal-overlay ${drawer ? "drawer-overlay" : ""} ${overlayClassName}`}

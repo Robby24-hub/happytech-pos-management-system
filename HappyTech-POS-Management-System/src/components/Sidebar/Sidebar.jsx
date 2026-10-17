@@ -26,14 +26,6 @@ export default function Sidebar({
       document.body.style.overflow = previous;
     };
   }, [expanded]);
-  useEffect(() => {
-    const media = matchMedia("(max-width: 1024px)");
-    const closeOnDesktop = () => {
-      if (!media.matches) setExpanded(false);
-    };
-    media.addEventListener("change", closeOnDesktop);
-    return () => media.removeEventListener("change", closeOnDesktop);
-  }, []);
   const brand = logo ? (
     <img className="store-logo" src={logo} alt="Happy Tech Store logo" />
   ) : (
@@ -101,18 +93,14 @@ export default function Sidebar({
   return (
     <>
       <aside className="sidebar no-print" inert={expanded ? true : undefined}>
-        <Link
-          className="brand sidebar-home"
-          aria-label="HappyTech home"
-          to={`/${allowedPages[0]}`}
-        >
-          {brand}
-        </Link>
         <button
+          type="button"
           className="sidebar-toggle"
+          title="Expand sidebar"
+          aria-haspopup="dialog"
           aria-label="Open sidebar"
           aria-expanded={expanded}
-          onClick={() => setExpanded(true)}
+          onClick={() => setExpanded(value => !value)}
         >
           <PanelLeft size={25} />
         </button>
